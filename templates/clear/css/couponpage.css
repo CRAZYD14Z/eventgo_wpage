@@ -1,0 +1,90 @@
+
+        /* Aplicar la fuente Luckiest Guy a títulos y códigos */
+        .coupon-title, .coupon-code {
+            font-family: 'Luckiest Guy', cursive;
+            letter-spacing: 1px;
+        }
+
+        /* Estilo base de la tarjeta */
+        .coupon-card {
+            background-color: #fff;
+            /* Borde punteado grueso para simular recorte */
+            border: 3px dashed #dee2e6; 
+            border-radius: 15px; /* Bordes ligeramente redondeados */
+            transition: transform 0.2s ease-in-out, border-color 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efecto hover sutil */
+        .coupon-card:hover {
+            transform: translateY(-5px);
+            border-color: #0d6efd; /* Cambia de color al pasar el mouse */
+        }
+
+        /* Decoración de semicírculos laterales (Efecto ticket) */
+        .coupon-card::before, .coupon-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            background-color: #f8f9fa; /* Mismo color que el fondo del body */
+            border-radius: 50%;
+            transform: translateY(-50%);
+            border: 3px dashed #dee2e6;
+        }
+        
+        /* Asegurar que el borde punteado de los círculos coincida con el hover */
+        .coupon-card:hover::before, .coupon-card:hover::after {
+            border-color: #0d6efd;
+        }
+
+        .coupon-card::before {
+            left: -12px; /* Muesca izquierda */
+        }
+
+        .coupon-card::after {
+            right: -12px; /* Muesca derecha */
+        }
+
+        /* Estilo del código del cupón */
+        .coupon-code-container {
+            background-color: #e9ecef;
+            border: 1px dashed #adb5bd;
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .coupon-code {
+            font-size: 1.5rem;
+            color: #0d6efd;
+            margin: 0;
+        }
+
+        /* Estilo del botón personalizado */
+        .btn-coupon {
+            font-family: 'Luckiest Guy', cursive;
+            background-color: #ff0000; /* Rojo */
+            color: #ffff00;           /* Amarillo */
+            border: 2px solid #b30000; /* Rojo oscuro para borde */
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-coupon:hover {
+            background-color: #cc0000; /* Rojo más oscuro al pasar el mouse */
+            color: #ffffff;           /* Blanco al pasar el mouse */
+            transform: scale(1.05);    /* Efecto de pulso */
+        }
+
+        /* Clase para cuando ya se copió */
+        .btn-copied {
+            background-color: #28a745 !important; /* Verde */
+            color: #ffffff !important;
+            border-color: #1e7e34 !important;
+        }        

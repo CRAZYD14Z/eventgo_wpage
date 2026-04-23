@@ -1,0 +1,138 @@
+        /* --- ESTILOS DE LA TARJETA (Se mantienen) --- */
+        .floating-card {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 320px;
+            z-index: 1060;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: none;
+            border-radius: 15px;
+            display: none; /* Oculta inicialmente por JS */
+            overflow: hidden;
+            background-color: #fff;
+        }
+        .floating-card img {
+            margin-top: -30px;
+            border: 5px solid white;
+            background-color: white;
+        }
+        .card-header-custom {
+            background: transparent;
+            border: none;
+        }
+
+        /* --- ESTILOS DE LA PESTAÑA (Se mantienen) --- */
+        #couponTab {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1050;
+            background-color: #0d6efd;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.4);
+            display: none;
+            font-weight: bold;
+            font-size: 14px;
+            border: none;
+        }
+
+        @keyframes pulse-blue {
+            0% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(13, 110, 253, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0); }
+        }
+
+        #couponTab.animate-pulse {
+            animation: pulse-blue 2s infinite;
+        }
+
+        /* --- NUEVOS ESTILOS PARA EL BOTÓN ROJO Y ANIMADO --- */
+        
+        /* Definición de la animación de rebote */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0); /* Posición inicial */
+            }
+            40% {
+                transform: translateY(-10px); /* Sube */
+            }
+            60% {
+                transform: translateY(-5px); /* Sube un poco menos */
+            }
+        }
+
+        /* Clase para aplicar el rebote infinito */
+        .animate-bounce {
+            animation: bounce 2s infinite; /* Ejecuta la animación cada 2s indefinidamente */
+        }
+
+        .font-mercado {
+            font-family: 'Luckiest Guy', cursive;
+            color: #ffcc00; /* Amarillo de oferta */
+            text-shadow: 2px 2px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000; /* Borde negro grueso */
+            letter-spacing: 2px;
+            transform: rotate(-3deg); /* Un poco inclinada para dar dinamismo */
+            display: inline-block;
+        }        
+
+                
+        /* Ajuste para el botón rojo con la misma letra */
+        .btn-vibrant-red {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 1.2rem;
+            background-color: #e60000;
+            border: 3px solid #fff; /* Borde blanco para que resalte más */
+            color: white;
+            text-transform: uppercase;
+        }
+        .btn-vibrant-red:hover {
+            background-color: #e60000;
+            border-color: #cc0000;
+            color: white;
+        }
+
+        /* Ajuste para móviles */
+        @media (max-width: 576px) {
+            .floating-card {
+                width: calc(100% - 40px);
+                left: 20px;
+                right: 20px;
+            }
+        }
+
+        /* Pestaña con estilo de Botón de Mercado */
+        #couponTab {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1050;
+            
+            /* Estética de Mercado */
+            font-family: 'Luckiest Guy', cursive;
+            background-color: #ff3333; /* Rojo vibrante */
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: 3px solid #fff; /* Borde blanco resaltado */
+            box-shadow: 0 8px 20px rgba(255, 51, 51, 0.4);
+            
+            cursor: pointer;
+            display: none;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            transition: transform 0.2s;
+        }
+
+        /* Aplicamos el mismo rebote que al botón original */
+        #couponTab.animate-bounce {
+            animation: bounce 2s infinite;
+        }
+
+        #couponTab:hover {
+            background-color: #e60000;
+            transform: scale(1.05); /* Se agranda un poco al pasar el mouse */
+        }

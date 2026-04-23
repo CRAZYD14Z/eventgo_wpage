@@ -1,0 +1,18 @@
+RewriteEngine On
+
+# Evita que la regla se aplique si el archivo o carpeta ya existen físicamente
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Captura lo que viene después de /productos/ y lo pasa como parámetro
+RewriteRule ^events/?$ events.php [L,QSA]
+RewriteRule ^us/?$ us.php [L,QSA]
+RewriteRule ^contact/?$ contact.php [L,QSA]
+RewriteRule ^categories/?$ category.php [L,QSA]
+RewriteRule ^product/([^/]+)/?$ product.php?Id=$1 [L,QSA]
+RewriteRule ^products/([^/]+)/?$ products.php?Id=$1 [L,QSA]
+RewriteRule ^coupon/([^/]+)/?$ coupon.php?Id=$1 [L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^([^/]+)$ $1.php [L]

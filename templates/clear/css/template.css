@@ -1,0 +1,217 @@
+   :root { --primary-color: #0d6efd; }
+        body { background-color: #f8f9fa; }
+
+        /* Estilos Comunes */
+        .section-title { font-weight: 700; margin-bottom: 40px; text-align: center; color: #333; }
+        
+        /* 1. Carrusel Categorías */
+        .cat-card {
+            background: #fff; border-radius: 12px; padding: 25px;
+            text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: 0.3s; border: 1px solid #eee; margin: 10px 5px;
+            text-decoration: none; color: #333; display: block;
+        }
+        .cat-card:hover { transform: translateY(-5px); border-color: var(--primary-color); background-color: var(--primary-color); color: white; }
+
+        /* 2. Carrusel Reviews */
+        .review-card {
+            background: #fff; border-radius: 15px; padding: 30px;
+            margin: 20px 10px; border-left: 5px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .stars { color: #ffc107; margin-bottom: 10px; }
+
+        /* 3. Grid de Categorías */
+        .grid-item {
+            background: #fff; border-radius: 10px; padding: 20px;
+            text-align: center; transition: 0.3s; height: 100%;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; border: 1px solid #e0e0e0;
+            text-decoration: none; color: #333;
+        }
+        .grid-item:hover { background: var(--primary-color); color: white; transform: scale(1.02); }
+
+        /* 4. Sección Sobre Nosotros */
+        .about-section {
+            background-color: #e9ecef; /* Un gris claro para diferenciar */
+            border-radius: 15px;
+            padding: 50px;
+        }
+        .about-logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 150px; /* Altura para el movimiento */
+            overflow: hidden; /* Oculta el logo si se sale del contenedor */
+        }
+        .moving-logo {
+            width: 100px; /* Tamaño del logo */
+            height: 100px;
+            background-color: var(--primary-color); /* Color de ejemplo */
+            border-radius: 50%; /* Para un logo redondo */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            color: white;
+            position: relative; /* Necesario para el movimiento con transform */
+            transition: transform 0.1s linear; /* Movimiento suave */
+        }
+        /* Para un logo de imagen, usa esto en vez del anterior */
+        /*
+        .moving-logo img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        */
+
+        /* Altura de la sección del logo */
+        .hero-logo-section {
+            min-height: 50vh;
+            overflow: hidden;
+            background: radial-gradient(circle, #ffffff 0%, #f1f1f1 100%);
+        }
+
+        /* Contenedor del logo */
+        .main-logo {
+            font-size: 8rem;
+            color: var(--primary-color);
+            display: inline-block;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+            /* Aplicamos las animaciones combinadas */
+            animation: bounce 2s infinite ease-in-out, dance 3s infinite ease-in-out;
+        }
+
+        /* Animación de Rebote (Arriba y Abajo) */
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-30px);
+            }
+        }
+
+        /* Animación de Baile (Rotación y balanceo) */
+        @keyframes dance {
+            0%, 100% {
+                rotate: 0deg;
+                scale: 1;
+            }
+            25% {
+                rotate: 15deg;
+                scale: 1.1;
+            }
+            75% {
+                rotate: -15deg;
+                scale: 0.9;
+            }
+        }
+
+        /* Si usas una imagen en lugar de un icono, esto asegura que escale bien */
+        .main-logo img {
+            width: 200px;
+            height: auto;
+        }        
+
+        /* CAPA 1: Animación constante de baile y rebote */
+        .dance-container {
+            display: inline-block;
+            animation: bounce 2s infinite ease-in-out, dance 3s infinite ease-in-out;
+        }
+
+        /* CAPA 2: El giro 360 independiente */
+        .spinner-hover {
+            display: inline-block;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+        }
+
+        /* Al pasar el mouse, gira 360 sin importar lo que haga la capa de afuera */
+        .spinner-hover:hover {
+            transform: rotate(360deg) scale(1.2);
+        }
+
+        /* Estilo del contenido del logo (Icono o Imagen) */
+        .main-logo-content {
+            font-size: 8rem;
+            color: #0d6efd; /* Color primario */
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+        }
+
+        /* Mantenemos tus Keyframes originales */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+
+        @keyframes dance {
+            0%, 100% { rotate: 0deg; }
+            25% { rotate: 15deg; }
+            75% { rotate: -15deg; }
+        }
+
+
+
+
+        /* Configuración del panel lateral derecho */
+        #modalReserva .modal-dialog {
+            position: fixed;
+            margin: 0;
+            width: 100%; /* Para móviles */
+            max-width: 450px;
+            height: 100%;
+            right: -450px; /* Escondido por defecto */
+            transition: right 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        #modalReserva.show .modal-dialog {
+            right: 0;
+        }
+
+        #modalReserva .modal-content {
+            height: 100%;
+            border-radius: 0;
+        }
+
+        /* Scroll personalizado para el carrito */
+        #modalReserva .modal-body::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        #modalReserva .modal-body::-webkit-scrollbar-thumb {
+            background: #e0e0e0;
+            border-radius: 10px;
+        }
+
+        /* Efecto Hover en tarjetas */
+        #modalReserva .card {
+            transition: transform 0.2s ease;
+        }
+
+        #modalReserva .card:hover {
+            transform: translateY(-2px);
+        }        
+
+        .item-checkout .btn-link {
+    transition: all 0.2s ease;
+}
+
+.item-checkout .collapse .bg-light {
+    border: 1px dashed #ced4da;
+}
+
+.item-checkout img {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Animación suave para cuando aparece un extra */
+.animate-item {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
