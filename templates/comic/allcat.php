@@ -13,7 +13,8 @@
                     $data = json_decode(API($jwt,$api_url,$data,'POST'), true);
                     if ($data['status'] === 'success') {
                         foreach ($data['data'] as $category) {
-                            $category['Imagen'] = URL_IMAGES.$category['Imagen'];
+                            $category['Imagen'] = URL_IMAGES.'/categories/thumbnails/'.$category['Imagen'];
+                            
                             $URL = str_replace(" ","-",$category['Nombre']);
                             echo "<div class='col-6 col-md-4 col-lg-2'><a href='".URL_BASE."/products/{$URL}' class='cat-card'><img height='150px' src='{$category['Imagen']}' alt='{$category['Nombre']}'> </a></div>";
                         }        

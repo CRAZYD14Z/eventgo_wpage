@@ -6,7 +6,7 @@
                 <?php
                 
                     foreach ($data['UpSelling'] as $UpSelling) {
-                        $UpSelling['Image'] = URL_IMAGES.$UpSelling['Image'];
+                        $UpSelling['Image'] = URL_IMAGES.'/products_images/thumbnails/'.$UpSelling['Image'];
                         $URL = str_replace(" ","-",$UpSelling['Name']);
                         echo "  <div class='swiper-slide'>
                                     <a href='".URL_BASE."/product/{$URL}' class='cat-card'>

@@ -3,10 +3,11 @@
     require_once 'config.php';
     require_once 'functions.php';
     require_once TEMPLATE.'head.php'; 
-
+/*
     include_once 'database.php'; 
     $database = new Database();
     $db = $database->getConnection();        
+*/    
 
 ?>
     <link rel="stylesheet" href="css/general.css">
@@ -52,6 +53,35 @@
 
         canvas { width: 100%; height: 100%; cursor: url('https://img.icons8.com/ios-filled/20/000000/edit--v1.png'), auto; }
 
+
+/* Centra el cargador en la pantalla o contenedor */
+.loader-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px; /* Ajusta según necesites */
+    width: 100%;
+}
+
+/* El Spinner (Círculo giratorio) */
+.loader {
+    border: 10px solid #f3f3f3; /* Gris claro */
+    border-top: 10px solid #3498db; /* Azul (cambia a tu color corporativo) */
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+/* Animación de giro */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}        
+
+
     </style>
 </head>
 <body>
@@ -70,9 +100,10 @@
     $token = $_GET['Id']; // El UUID de la URL
     $ahora = date("Y-m-d H:i:s");
 
-    $stmt = $db->prepare("SELECT * FROM quotes WHERE UUID = ? AND Status = 'A'");
-    $stmt->execute([$token]);
-    $cotizacion = $stmt->fetch();
+
+    $api_url = URL_API."quotes";
+    $data = json_encode(['token' => $token]);
+    $cotizacion = json_decode(API($jwt,$api_url,$data,'GET'), true);
 
     if ($cotizacion) {
         // Verificar si la fecha actual es mayor a la de expiración
@@ -83,6 +114,11 @@
     } else {
         echo "Enlace no válido.";
         die();
+    }
+
+    if ($cotizacion['Contrato'] !=""){
+            echo "El documento ya cuenta con contrato firmado.";
+            die();        
     }
 ?>
 
@@ -96,19 +132,19 @@
             
             <div class="contract-content">
                 <h1 class="text-center mb-5">Contrato</h1>
-                
-                <div id="Contract">
 
+                <div id="loader-container" class="loader-wrapper">
+                    <div class="loader"></div>
+                    <p>Generando contrato...</p>
+                </div>
 
+                <div id="Contract" style="display: none;">
                     <?php
-                        $query = "select Template FROM document_center WHERE Tipo = 'contract' AND IdTemplate = 2 AND Activo = 1 AND Idioma ='$lang'";
-                        $stmt = $db->prepare($query);
-                        $stmt->execute();
-                        $Template = $stmt->fetch(PDO::FETCH_ASSOC);
+                        $api_url = URL_API."document_center";
+                        $data = json_encode(['Tipo' => 'contract','IdTemplate' => 2,'Idioma' => $lang,]);
+                        $Template = json_decode(API($jwt,$api_url,$data,'GET'), true);
                         echo $Template['Template'];
-                    ?>                
-
-
+                    ?>
                 </div>
 
                 <div class="signature-area" id="signature-section">
@@ -209,7 +245,7 @@
             $('#Contract').html(contenido);            
 
             const contenidoDiv = document.getElementById('Contract').innerHTML;            
-
+            //alert(contenidoDiv)
             const datos = { 
                 token: '<?php echo $token;?>',
                 contrato: contenidoDiv 
@@ -234,7 +270,7 @@
                 //.html('Validar y Enviar Contrato');
                 //console.log('Éxito:', data);
                 //alert('Contrato guardado correctamente ' + data.UUID);
-                var url = "<?php echo URL_API_BASE?>makepayment.php?Id="+data.UUID+"&base=<?php echo URL_BASE?>";
+                var url = "makepayment.php?Id="+data.UUID;
                 $(location).attr('href', url);
             })
             .catch((error) => {
@@ -246,45 +282,33 @@
 
         LoadDocument();
 
-        
-
+        $("#loader-container").fadeOut(400, function() {
+            // Esta función se ejecuta CUANDO termina el fadeOut
+            $("#Contract").fadeIn(500); 
+        });    
     });
 
-
 function LoadDocument(){
-
     <?php
-        $query = "select Logo,NombreCompania, Direccion,Direccion2, Ciudad,CP,Estado,Pais,TelefonoCelular FROM account";
-        $stmt = $db->prepare($query);
-        $stmt->execute();
-        $account = $stmt->fetch(PDO::FETCH_ASSOC);
+        $api_url = URL_API."quote_account";
+        //$data = json_encode(['token' => $token]);
+        $data ='';
+        $account = json_decode(API($jwt,$api_url,$data,'GET'), true);
 
-        $query = "select * FROM lead WHERE Id = ?";
-        $stmt = $db->prepare($query);
-        $stmt->bindParam(1, $cotizacion['IdQuote']);
-        $stmt->execute();
-        $lead = $stmt->fetch(PDO::FETCH_ASSOC);    
+        //$api_url = URL_API."tip_deposit";
+        //$data = json_encode(['tip' => $Tip,'apay' => $APay,'quote' => $cotizacion['IdQuote']]);
+        //$Tips = json_decode(API($jwt,$api_url,$data,'POST'), true);
 
-        $query = "select * FROM lead_detail WHERE IdLead = ".$lead['Id']." ORDER BY Id";
-        $stmt = $db->prepare($query);
-        $stmt->execute();
-        $lead_details = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $api_url = URL_API."quote_data";
+        $data = json_encode(['lead' => $cotizacion['IdQuote']]);        
+        $respuesta = json_decode(API($jwt,$api_url,$data,'GET'), true);
 
-        $query = "select * FROM customers WHERE Id = ".$lead['Customer'];
-        $stmt = $db->prepare($query);
-        $stmt->execute();
-        $customer = $stmt->fetch(PDO::FETCH_ASSOC);        
-
-        $query = "select * FROM organizations WHERE Id = ".$lead['Organization'];
-        $stmt = $db->prepare($query);
-        $stmt->execute();
-        $organization = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $query = "select * FROM venues WHERE Id = ".$lead['Venue'];
-        $stmt = $db->prepare($query);
-        $stmt->execute();
-        $venue = $stmt->fetch(PDO::FETCH_ASSOC);                
-
+        $lead = $respuesta['lead'];
+        $lead_details =  $respuesta['lead_details'];
+        $customer = $respuesta['customer'];        
+        $organization =  $respuesta['organization'];
+        $venue =  $respuesta['venue'];
+        $discounts =  $respuesta['discounts'];
 
     ?>
 
@@ -339,59 +363,9 @@ const FHFp = FHF.split(' ')
     const descuentos = [];
 
 <?php
-    if ($lead_details) {
-        foreach ($lead_details as $lead_detail) {
-            if ($lead_detail['IdProductRel'] > 0 )
-                $query = "select * FROM products WHERE Id = ". $lead_detail['IdProductRel'];
-            else
-                $query = "select * FROM products WHERE Id = ". $lead_detail['IdProduct'];
-            $stmt = $db->prepare($query);
-            $stmt->execute();
-            $product = $stmt->fetch(PDO::FETCH_ASSOC);  
-            
-            if ($lead_detail['IdProductRel'] > 0 )
-                $query = "SELECT *  from products_images WHERE Product = ". $lead_detail['IdProductRel']." ORDER BY Orden LIMIT 1";
-            else
-                $query = "SELECT *  from products_images WHERE Product = ". $lead_detail['IdProduct']." ORDER BY Orden LIMIT 1";
-            $stmt = $db->prepare($query);
-            $stmt->execute();
-            $Images = $stmt->fetch(PDO::FETCH_ASSOC);     
-
-            echo "
-                let item".$lead_detail['Id']." = {
-                    rentalname_url_photo: '".URL_IMAGES.$Images['Image']."',
-                    rentalname: '".$product['Name']."',
-                    fullrentaltime: '',
-                    rentalqty: '".$lead_detail['Quantity']."',
-                    rentaltotalprice: '".$lead_detail['Price']."'
-                };
-                productos.push(item".$lead_detail['Id'].");
-            ";
-
-        }
-    }
-
-    $query = "
-    SELECT
-        lead_discounts.Id, 
-        lead_discounts.IdLead, 
-        lead_discounts.IdDiscount, 
-        discounts.`Name`, 
-        lead_discounts.Type, 
-        lead_discounts.Amount, 
-        lead_discounts.AmountVal
-    FROM
-        lead_discounts
-        INNER JOIN
-        discounts
-        ON 
-            lead_discounts.IdDiscount = discounts.Id        
-    WHERE lead_discounts.IdLead = ".$lead['Id']." ORDER BY lead_discounts.Id";
-
-    $stmt = $db->prepare($query);
-    $stmt->execute();
-    $discounts = $stmt->fetchAll(PDO::FETCH_ASSOC);    
-
+    //echo $respuesta['script_push'];
+    $push_procesado = str_replace('.avif', '.jpg', $respuesta['script_push']);
+    echo $push_procesado;
     if ($discounts) {
         foreach ($discounts as $discount) {
             echo "
@@ -401,8 +375,7 @@ const FHFp = FHF.split(' ')
             };
             descuentos.push(descuento".$discount['Id'].");";
         }
-    }          
-
+    }      
 ?>
 
 
@@ -411,18 +384,18 @@ const FHFp = FHF.split(' ')
     const $filaPlantilla = $cuerpoTabla.find('.item-fila').first();
     ejecutarRenderizadoContract($contenedor, $cuerpoTabla, $filaPlantilla, datosGenerales, productos,descuentos);
 
-        <?php 
-            if ($lead['Tip'] > 0){
-                echo"
-                    $('#tips').show();
-                ";
-            }
-            else{
-                echo"
-                    $('#tips').hide();
-                ";
-            }
-        ?>    
+    <?php 
+        if ($lead['Tip'] > 0){
+            echo"
+                $('#tips').show();
+            ";
+        }
+        else{
+            echo"
+                $('#tips').hide();
+            ";
+        }
+    ?>    
 
 }    
 
@@ -485,7 +458,7 @@ function ejecutarRenderizadoContract($contenedor, $cuerpoTabla, $filaPlantilla, 
 
 </div>
 <?php require_once TEMPLATE.'social.php'; ?>
-
+<?php require_once TEMPLATE.'cart.php'; ?>
 <?php require_once TEMPLATE.'scripts.php'; ?>
 <?php require_once 'scripts.php'; ?>
 <script src="<?php echo TEMPLATE;?>js/idx-template.js"></script>

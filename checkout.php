@@ -156,7 +156,8 @@ function cargar_accesorios(itemId){
         type: 'GET',
         data: { producto_id: itemId },
         headers: {
-            'Authorization': 'Bearer ' + token
+            'Authorization': 'Bearer ' + token,
+            'X-ID-CLIENT': '<?= ID_CLIENT ?>'
         },
         success: function(response) {
             // Asumiendo que la API devuelve un array de objetos
@@ -376,7 +377,8 @@ if (email !== '') {
         contentType: 'application/json',
         data: JSON.stringify(paqueteFinal),
         headers: {
-            'Authorization': 'Bearer ' + token
+            'Authorization': 'Bearer ' + token,
+            'X-ID-CLIENT': '<?= ID_CLIENT ?>'
         },        
         beforeSend: function() {
             $('#btn_enviar_cotizacion').prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Procesando...');

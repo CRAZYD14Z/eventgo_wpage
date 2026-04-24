@@ -10,6 +10,7 @@
 
 
     function API($JWT,$URL,$DATA,$METHOD){
+        $IdCliente = ID_CLIENT;
         $ch = curl_init($URL);
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Retornar el resultado como string
@@ -18,7 +19,8 @@
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             "Authorization: Bearer $JWT",        // ENVIAMOS EL JWT AQUÍ
             "Content-Type: application/json",
-            "Accept: application/json"
+            "Accept: application/json",
+            "X-ID-CLIENT: $IdCliente"
         ]);
 
         $response = curl_exec($ch);
@@ -28,7 +30,6 @@
         }
 
         curl_close($ch);
-
         return $response;
     }
 
@@ -56,6 +57,11 @@
             define('PLACE_ID', $account['PlaceID']);
             define('CORREO', $account['Correo']);
         }
+    }
+    else{
+
+    echo $data['error'];
+
     }
 
     //die();

@@ -60,7 +60,7 @@
                 <div class="main-image-container mb-3 border rounded bg-white shadow-sm">
                     <?php 
                         foreach ($data['Image'] as $Image) {
-                            $URLImagep = URL_IMAGES.$Image['Image'];
+                            $URLImagep = URL_IMAGES.'/products_images/thumbnails/'.$Image['Image'];
                             echo "<img id='mainProductImage' src='$URLImagep' class='img-fluid' alt='Producto'>";
                         }
                     ?>
@@ -70,7 +70,7 @@
                     <div class="d-flex justify-content-center overflow-auto">
                         <?php 
                             foreach ($data['Images'] as $Image) {
-                                $URLImage = URL_IMAGES.$Image['Image'];
+                                $URLImage = URL_IMAGES.'/products_images/thumbnails/'.$Image['Image'];
                                 echo "<img src='$URLImage' class='img-thumbnail me-2' style='width: 70px; cursor: pointer;' onclick='changeImage(this.src)'>";
                             }
                         ?>
