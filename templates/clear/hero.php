@@ -3,7 +3,7 @@
         <div class="dance-container">
             <div class="spinner-hover">
                 <div id="dancingLogo" class="main-logo-content">
-                    <img src="<?php echo COMPANY_LOGO?>" alt="dsjumpers">
+                    <img src="<?php echo COMPANY_LOGO?>" alt="dsjumpers" width="50%">
             </div>
         </div>
         
