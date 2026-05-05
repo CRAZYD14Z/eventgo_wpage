@@ -73,13 +73,13 @@
         }
         
         productos.forEach(product => {
-            const url = '<?php echo URL_BASE; ?>/product/' + product.ProductName.replace(/ /g, '-')+'?SD='+$('#FI').val()+'&ED='+$('#FF').val()+'&SH='+$('#hInicio').val()+'&EH='+$('#hFin').val();
+            const url = '<?php echo URL_BASE; ?>/product/' + product.ProductName.replace(/ /g, '-')+'?Idp='+product.Producto+'?SD='+$('#FI').val()+'&ED='+$('#FF').val()+'&SH='+$('#hInicio').val()+'&EH='+$('#hFin').val();
             const imagenUrl = '<?php echo URL_IMAGES; ?>/products_images/thumbnails/' + product.Image;
             
             const productoHTML = `
                 <div class="col-6 col-md-4 col-lg-2">
                     <a href="${url}" class="cat-card">
-                        <img height="150px" src="${imagenUrl}" alt="${product.ProductName}">
+                        <img width="100px" src="${imagenUrl}" alt="${product.ProductName}">
                         <b>${product.ProductName}</b> <br> $${product.Price.toFixed(2)}
                     </a>
                 </div>
@@ -88,7 +88,7 @@
             contenedor.innerHTML += productoHTML;
         });
     }
-
+ 
 </script>
 </body>
 </html>

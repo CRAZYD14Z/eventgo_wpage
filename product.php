@@ -15,10 +15,11 @@
     $api_url = URL_API."products";
     
     $Product = str_replace("-"," ",$_GET['Id']);
+    $IdP = str_replace("-"," ",$_GET['Idp']);
     if (!isset($_GET['SD']))
-        $data = json_encode(["Product" => $Product ,"SD" => date("Y-m-d"),"ED" => date("Y-m-d"),"SH" => '08:00',"EH" => '16:00']);
+        $data = json_encode(["Product" => $Product ,"IdP" => $IdP ,"SD" => date("Y-m-d"),"ED" => date("Y-m-d"),"SH" => '08:00',"EH" => '16:00']);
     else
-        $data = json_encode(["Product" => $Product ,"SD" => $_GET['SD'],"ED" => $_GET['ED'],"SH" => $_GET['SH'],"EH" => $_GET['EH']]);
+        $data = json_encode(["Product" => $Product ,"IdP" => $IdP ,"SD" => $_GET['SD'],"ED" => $_GET['ED'],"SH" => $_GET['SH'],"EH" => $_GET['EH']]);
     $data = json_decode(API($jwt,$api_url,$data,'POST'), true);
     //print_r($data);
     if ($data['status'] === 'success') {

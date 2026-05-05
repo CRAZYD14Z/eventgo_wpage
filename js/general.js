@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert("Por favor selecciona dos fechas en el calendario.");
             return;
         }
-
+/*
         if (fechas.length === 1) {
 
             const f1 = fechas[0].toLocaleDateString('sv-SE'); // sv-SE devuelve YYYY-MM-DD
@@ -93,6 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('fechahorainicio').value = `${f1}T${hInicio.value}`;
             document.getElementById('fechahorafin').value = `${f2}T${hFin.value}`;
         }
+*/            
         bootstrap.Modal.getInstance(document.getElementById('modalReserva')).hide();
     });
 
@@ -137,7 +138,8 @@ $.ajax({
     contentType: 'application/json',
     data: JSON.stringify(datos),
     headers: {
-        'Authorization': 'Bearer ' + token
+        'Authorization': 'Bearer ' + token,
+        'X-ID-CLIENT': id_client
     },
     success: function(response) {
         console.log('Éxito:', response);
@@ -207,11 +209,17 @@ $.ajax({
     }
     
     //pintarLogCarrito();
+
+    validarRangoFecha()
+
+
 });    
 
     // Valores iniciales
     hInicio.value = "08:00";
     hInicio.dispatchEvent(new Event('change'));
+
+
 
 });
 
@@ -821,4 +829,70 @@ function pintarLogCarrito() {
     console.log(`%cTOTAL FINAL: $${totales.total.toFixed(2)}`, "font-weight: bold; font-size: 14px; color: #d32f2f;");
     
     console.groupEnd();
+}
+
+function validarRangoFecha() {
+    const input = document.getElementById("textoFechaRango");
+    if (!input){
+        mostrarPopup("Por favor selecciona una fecha para tu evento.");
+        return false;        
+    }
+
+    const valor = input.innerText.trim();
+    if (!valor || valor.includes("--") || valor === "") {
+        mostrarPopup("Por favor, selecciona una fecha para tu evento.");
+        $('#btnConfirmar').hide();
+        
+        return false;
+    }
+
+    // 2. Extraer la fecha final (asumiendo formato "YYYY-MM-DD to YYYY-MM-DD")
+    const fechas = valor.split(" to ");
+    const fechaFinStr = fechas[fechas.length - 1]; // Toma la segunda fecha
+    const fechaFin = new Date(fechaFinStr);
+    
+    // Creamos la fecha actual a las 00:00 para una comparación justa
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    // 3. Validar si está en el pasado
+    if (fechaFin < hoy) {
+        mostrarPopup("El periodo seleccionado ya ha pasado. Por favor, elija uno vigente.");
+        $('#btnConfirmar').hide();
+        return false;
+    }
+
+    console.log("Fecha válida");
+    $('#btnConfirmar').show();
+    return true;
+}
+
+function mostrarPopup(mensaje) {
+    // Crear un elemento div para el popup temporal
+    const popup = document.createElement("div");
+    popup.innerText = mensaje;
+    
+    // Estilos rápidos para visibilidad
+    Object.assign(popup.style, {
+        position: "fixed",
+        top: "20px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        backgroundColor: "#ff4d4d",
+        color: "white",
+        padding: "15px 25px",
+        borderRadius: "8px",
+        zIndex: "1000",
+        boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+        fontFamily: "sans-serif"
+    });
+
+    document.body.appendChild(popup);
+
+    // Desvanecer y eliminar después de 3 segundos
+    setTimeout(() => {
+        popup.style.transition = "opacity 0.5s";
+        popup.style.opacity = "0";
+        setTimeout(() => popup.remove(), 500);
+    }, 3000);
 }
