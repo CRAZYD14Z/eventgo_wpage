@@ -64,9 +64,6 @@
             die();
         }
 
-        //$PayPlatform ='OPAY';
-        $PayPlatform = 'SQUARE';
-
         $token = $_GET['Id']; // El UUID de la URL
         $ahora = date("Y-m-d H:i:s");
 
@@ -86,7 +83,7 @@
             die();
         }
 
-
+/*
         $ID_OPAY='mles9ufd4m3rlilw00i8';
         $SK_OPAY='sk_ab545fdf98b446e78ed7ef908d1687a2';
         $PK_OPAY='pk_ed306f11c3764a9da955092ee7350160';
@@ -102,12 +99,13 @@
         define('appId_square', $APPID_SQUARE);
         define('locId_square', $LOCID_SQUARE);
         define('accessToken_square',$TOKEN_SQUARE);        
+*/
+
+        
 
 
-        $api_url = URL_API."quote_account";
-        //$data = json_encode(['token' => $token]);
-        $data ='';
-        $account = json_decode(API($jwt,$api_url,$data,'GET'), true);
+
+        $PayPlatform = $account['Pay_platform'];
 
         //$api_url = URL_API."tip_deposit";
         //$data = json_encode(['tip' => $Tip,'apay' => $APay,'quote' => $cotizacion['IdQuote']]);

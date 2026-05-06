@@ -37,7 +37,11 @@
 </div>
 <?php require_once TEMPLATE.'social.php'; ?>
 
-<?php require_once TEMPLATE.'couponcard.php'; ?>
+<?php 
+    if ( $account['Couppon'] == 1){
+        require_once TEMPLATE.'couponcard.php'; 
+    }
+?>
 
 <?php require_once TEMPLATE.'cart.php'; ?>
 
@@ -47,8 +51,8 @@
 <?php require_once 'scripts.php'; ?>
 <script src="js/general.js"></script>
 <script>
-
-var autoCloseTimer;
+<?php if ( $account['Couppon'] == 1){?>
+        var autoCloseTimer;
 
         $(document).ready(function() {
             // Mostrar la tarjeta tras 5 segundos
@@ -82,7 +86,7 @@ var autoCloseTimer;
                 $('#couponTab').fadeIn('slow').addClass('animate-bounce');
             });
         }
-
+<?php } ?>
 
 </script>
 </body>

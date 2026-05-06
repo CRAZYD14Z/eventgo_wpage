@@ -15,6 +15,14 @@
     </style>    
 
 </head>
+
+<?php
+    if ( $account['Couppon'] == 0){
+        header("Location: ".$account['WebSite']);
+        exit();
+    }
+?>
+
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
 <body>

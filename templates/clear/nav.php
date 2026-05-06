@@ -24,7 +24,9 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="<?php echo URL_BASE?>/categories">Categorías</a></li>
                 <li class="nav-item"><a class="nav-link" href="<?php echo URL_BASE?>/events">Eventos</a></li>
-                <li class="nav-item"><a class="nav-link" href="<?php echo URL_BASE?>/coupon/get-coupon">Cupones</a></li>
+                <?php if ( $account['Couppon'] == 1){?>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo URL_BASE?>/coupon/get-coupon">Cupones</a></li>
+                <?php }?>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropNosotros" data-bs-toggle="dropdown">
                         Acerca de nosotros
