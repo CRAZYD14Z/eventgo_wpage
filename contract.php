@@ -354,7 +354,13 @@ const FHFp = FHF.split(' ')
         tip: "<?php echo $lead['Tip']?>",
         total: "<?php echo $lead['Total']?>",
         apayment: "<?php echo $lead['DepositAmount']?>",
-        ctr_balance_due: "<?php echo $lead['Balance']?>",
+        //ctr_balance_due: "<?php echo $lead['Balance']?>",
+        <?php  if ($account['Deposit'] == 1){?>
+            ctr_balance_due: "<?php if ($lead['BalanceQ'] == ""){echo $lead['Total'] - $lead['DepositAmount'];}else{echo $lead['BalanceQ'];}?>",
+        <?php  } else {?>
+            ctr_balance_due: "<?php echo $lead['Total'];?>",        
+        <?php  }?>        
+        //ctr_balance_due: "<?php if ($lead['BalanceQ'] == ""){echo $lead['Total'] - $lead['DepositAmount'];}else{echo $lead['BalanceQ'];}?>",
 
         electric:""
     };
@@ -450,6 +456,12 @@ function ejecutarRenderizadoContract($contenedor, $cuerpoTabla, $filaPlantilla, 
     });
 
 }
+
+    <?php
+        if ($account['Deposit'] == 0){
+            echo "$('#tr-apay').hide();";
+        }
+    ?>
 
 
 

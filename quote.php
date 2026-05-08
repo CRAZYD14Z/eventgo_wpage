@@ -92,6 +92,11 @@
         die();        
     }
 
+    $PQ=0;
+    if (isset($_GET['PQ'])){
+        $PQ=$_GET['PQ'];
+    }       
+
     $token = $_GET['Id']; // El UUID de la URL
     $ahora = date("Y-m-d H:i:s");
     
@@ -118,6 +123,31 @@
 
 
 ?>
+
+     <?php
+
+        $api_url = URL_API."quote_account";
+        //$data = json_encode(['token' => $token]);
+        $data ='';
+        $account = json_decode(API($jwt,$api_url,$data,'GET'), true);
+
+        $api_url = URL_API."tip_deposit";
+        $data = json_encode(['tip' => $Tip,'apay' => $APay, 'pq' => $PQ ,'quote' => $cotizacion['IdQuote']]);
+        
+        $Tips = json_decode(API($jwt,$api_url,$data,'POST'), true);
+        
+        $api_url = URL_API."quote_data";
+        $data = json_encode(['lead' => $cotizacion['IdQuote']]);        
+        $respuesta = json_decode(API($jwt,$api_url,$data,'GET'), true);
+
+        $lead = $respuesta['lead'];
+        $lead_details =  $respuesta['lead_details'];
+        $customer = $respuesta['customer'];        
+        $organization =  $respuesta['organization'];
+        $venue =  $respuesta['venue'];
+        $discounts =  $respuesta['discounts'];
+
+    ?>
 
 <div id="scroll-indicator">
     <span>⬇ Deslice hacia abajo para acetar</span>
@@ -167,6 +197,43 @@
     </div>
 </div>
 
+<div id="modal-confirmacion-PQE" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); font-family: 'Segoe UI', Arial, sans-serif;">
+    <div style="background-color: #fff; margin: 15% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;">Anticipo no permitido</div>
+        <p style="font-size: 14px; color: #555; margin-bottom: 25px;">
+            El anticipo no puede ser menor de <span style="font-weight: bold; color: #27ae60;">$<?=  $account['DepositAmount'] ?></span> 
+        </p>
+        <div style="display: flex; justify-content: space-around;">
+            <button id="btn-aceptar-pqe" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;">Entiendo</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-confirmacion-PQEE" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); font-family: 'Segoe UI', Arial, sans-serif;">
+    <div style="background-color: #fff; margin: 15% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;">Anticipo no permitido</div>
+        <p style="font-size: 14px; color: #555; margin-bottom: 25px;">
+            El anticipo no puede ser mayor que el total de <span style="font-weight: bold; color: #27ae60;">$<?=  $lead['Total'] ?></span> 
+        </p>
+        <div style="display: flex; justify-content: space-around;">
+            <button id="btn-aceptar-pqee" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;">Entiendo</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-confirmacion-PQ" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); font-family: 'Segoe UI', Arial, sans-serif;">
+    <div style="background-color: #fff; margin: 15% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;">Confirmar Anticipo</div>
+        <p style="font-size: 14px; color: #555; margin-bottom: 25px;">
+            ¿Deseas cambiar el anticipo a <span id="text-monto-confirmarPQ" style="font-weight: bold; color: #27ae60;">$0.00</span> ?
+        </p>
+        <div style="display: flex; justify-content: space-around;">
+            <button id="btn-cancelar-PQ" style="padding: 10px 20px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; color: #666;">Cancelar</button>
+            <button id="btn-aceptar-pq" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;">Sí, cambiar</button>
+        </div>
+    </div>
+</div>
+
 
 <div id="modal-remove-tip" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); font-family: 'Segoe UI', Arial, sans-serif;">
     <div style="background-color: #fff; margin: 15% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
@@ -201,29 +268,7 @@
 
 <script>
 
- <?php
 
-        $api_url = URL_API."quote_account";
-        //$data = json_encode(['token' => $token]);
-        $data ='';
-        $account = json_decode(API($jwt,$api_url,$data,'GET'), true);
-
-        $api_url = URL_API."tip_deposit";
-        $data = json_encode(['tip' => $Tip,'apay' => $APay,'quote' => $cotizacion['IdQuote']]);
-        $Tips = json_decode(API($jwt,$api_url,$data,'POST'), true);
-
-        $api_url = URL_API."quote_data";
-        $data = json_encode(['lead' => $cotizacion['IdQuote']]);        
-        $respuesta = json_decode(API($jwt,$api_url,$data,'GET'), true);
-
-        $lead = $respuesta['lead'];
-        $lead_details =  $respuesta['lead_details'];
-        $customer = $respuesta['customer'];        
-        $organization =  $respuesta['organization'];
-        $venue =  $respuesta['venue'];
-        $discounts =  $respuesta['discounts'];
-
-    ?>
 
 const FHI = '<?php echo $lead['StartDateTime']?>';
 const FHF = '<?php echo $lead['EndDateTime']?>';
@@ -267,8 +312,11 @@ const FHFp = FHF.split(' ')
         tip: "<?php echo $lead['Tip']?>",
         total: "<?php echo $lead['Total']?>",
         apayment: "<?php echo $lead['DepositAmount']?>",
-        balancedue: "<?php echo $lead['Balance']?>",
-
+        <?php  if ($account['Deposit'] == 1){?>
+            balancedue: "<?php if ($lead['BalanceQ'] == ""){echo $lead['Total'] - $lead['DepositAmount'];}else{echo $lead['BalanceQ'];}?>",
+        <?php  } else {?>
+            balancedue: "<?php echo $lead['Total'];?>",        
+        <?php  }?>
         electric:"",
         signature:"",
         signeddate:"",
@@ -315,6 +363,8 @@ const FHFp = FHF.split(' ')
 
         let montoPendiente = 0;
         let anticipo = 0;
+        let pq = 0;
+
 
         // 1. Evento para los botones de %
         $(document).on('click', '.btn-tip', function() {
@@ -335,11 +385,43 @@ const FHFp = FHF.split(' ')
             }
         });
 
+        $(document).on('change', '#custom-pay-qnt', function() {
+            const valor = parseFloat($(this).val());
+            if (valor > 0) {
+                montoPendiente = valor.toFixed(2);
+                abrirModalConfirmacionPQ(montoPendiente);
+            }
+        });
+
+
+
         // Funciones del Modal
         function abrirModalConfirmacion(monto) {
             $('#text-monto-confirmar').text('$' + monto);
             $('#modal-confirmacion-tip').fadeIn(200);
         }
+
+        function abrirModalConfirmacionPQ(monto) {
+            if (monto < <?=  $account['DepositAmount'] ?>){
+                $('#modal-confirmacion-PQE').fadeIn(200);            
+            }
+            else if (monto > <?=  $lead['Total']?>){
+                $('#modal-confirmacion-PQEE').fadeIn(200);            
+            }                        
+            else{
+                $('#text-monto-confirmarPQ').text('$' + monto);
+                $('#modal-confirmacion-PQ').fadeIn(200);
+                pq = monto;
+            }
+        
+
+        }        
+
+        $(document).on('click', '#btn-cancelar-PQ', function() {
+            $('#modal-confirmacion-PQ').fadeOut(200);
+            $('#custom-pay-qnt').val(''); // Limpia el input si cancela
+            montoPendiente = 0;
+        });        
 
         $(document).on('click', '#btn-cancelar-tip', function() {
             $('#modal-confirmacion-tip').fadeOut(200);
@@ -369,13 +451,22 @@ const FHFp = FHF.split(' ')
 
 
         $(document).on('click', '.btn-apay', function() {
-            
             const porcentaje = $(this).data('apay');
             const subtotal = parseFloat(datosGenerales.total) || 0; // Ajusta según tu variable de precio
             anticipo = porcentaje;
             //alert (anticipo)
             abrirModalAnticipo((subtotal * (porcentaje / 100)).toFixed(2));
-        });        
+        });
+
+        $(document).on('click', '.btn-qnt', function() {
+            pq = $(this).data('apay');
+            //const subtotal = parseFloat(datosGenerales.total) || 0; // Ajusta según tu variable de precio
+            //anticipo = porcentaje;
+            //alert (anticipo)
+            abrirModalConfirmacionPQ(pq);
+        });
+
+
 
         function abrirModalAnticipo(monto) {
             $('#text-monto-anticipo').text('$' + monto);
@@ -392,24 +483,38 @@ const FHFp = FHF.split(' ')
             actualizarUrlYRedirigir({ APay: anticipo });
         });
 
-function actualizarUrlYRedirigir(nuevosParams) {
+        $(document).on('click', '#btn-aceptar-pq', function() {
+            $('#modal-confirmacion-PQ').fadeOut(200);
+            //alert(pq)
+            actualizarUrlYRedirigir({ PQ: pq });
+        });        
 
-    // 1. Capturamos los parámetros actuales de la URL
-    let params = new URLSearchParams(window.location.search);
 
-    // 2. Iteramos sobre los nuevos parámetros y los aplicamos
-    // Esto sobreescribe si ya existen o los crea si no.
-    Object.keys(nuevosParams).forEach(key => {
-        params.set(key, nuevosParams[key]);
-    });
+        $(document).on('click', '#btn-aceptar-pqe', function() {
+            $('#modal-confirmacion-PQE').fadeOut(200);
+        });
+        $(document).on('click', '#btn-aceptar-pqee', function() {
+            $('#modal-confirmacion-PQEE').fadeOut(200);
+        });
 
-    // 3. Construimos la nueva URL de destino
-    // window.location.pathname contiene la ruta sin los parámetros viejos
-    let nuevaUrl = window.location.origin + window.location.pathname + '?' + params.toString();
+        function actualizarUrlYRedirigir(nuevosParams) {
 
-    // 4. Redirigimos
-    window.location.href = nuevaUrl;
-}        
+            // 1. Capturamos los parámetros actuales de la URL
+            let params = new URLSearchParams(window.location.search);
+
+            // 2. Iteramos sobre los nuevos parámetros y los aplicamos
+            // Esto sobreescribe si ya existen o los crea si no.
+            Object.keys(nuevosParams).forEach(key => {
+                params.set(key, nuevosParams[key]);
+            });
+
+            // 3. Construimos la nueva URL de destino
+            // window.location.pathname contiene la ruta sin los parámetros viejos
+            let nuevaUrl = window.location.origin + window.location.pathname + '?' + params.toString();
+
+            // 4. Redirigimos
+            window.location.href = nuevaUrl;
+        }        
 
 
         <?php 
@@ -451,71 +556,96 @@ function actualizarUrlYRedirigir(nuevosParams) {
     });
 
 
-function LoadDocument(){
+    function LoadDocument(){
 
-    const $contenedor = $('#cotizacion-dsj');
-    const $cuerpoTabla = $('#lista-productos');
-    const $filaPlantilla = $cuerpoTabla.find('.item-fila').first();
-    ejecutarRenderizadoQuote($contenedor, $cuerpoTabla, $filaPlantilla, datosGenerales, productos,descuentos);
+        const $contenedor = $('#cotizacion-dsj');
+        const $cuerpoTabla = $('#lista-productos');
+        const $filaPlantilla = $cuerpoTabla.find('.item-fila').first();
+        ejecutarRenderizadoQuote($contenedor, $cuerpoTabla, $filaPlantilla, datosGenerales, productos,descuentos);
 
-    $("#loader-container").fadeOut(400, function() {
-        // Esta función se ejecuta CUANDO termina el fadeOut
-        $("#Quote").fadeIn(500); 
-    });
-
-}    
-
-function ejecutarRenderizadoQuote($contenedor, $cuerpoTabla, $filaPlantilla, datosGenerales, productos,descuentos) {
-    // 1. Limpiar productos previos (excepto la plantilla)
-    $cuerpoTabla.find('tr:not(.item-fila)').remove();
-
-    // 2. Procesar y agregar cada producto
-    productos.forEach(producto => {
-        let nuevaFilaHtml = $filaPlantilla[0].outerHTML;
-        $.each(producto, function(key, val) {
-            let regex = new RegExp('\\*' + key + '\\*', 'g');
-            nuevaFilaHtml = nuevaFilaHtml.replace(regex, val ?? '');
+        $("#loader-container").fadeOut(400, function() {
+            // Esta función se ejecuta CUANDO termina el fadeOut
+            $("#Quote").fadeIn(500); 
         });
-        
-        let $nuevaFila = $(nuevaFilaHtml).removeClass('item-fila').css('display', ''); // Quitar display:none
-        $cuerpoTabla.append($nuevaFila);
-    });
 
-
-    const $contenedorDescuentos = $contenedor.find('#extra_discounts');
-    const $filaOriginal = $contenedorDescuentos.find('tr').first();
-
-    if ($filaOriginal.length > 0) {
-        const htmlPlantillaDesc = $filaOriginal[0].outerHTML;
-        $contenedorDescuentos.empty(); // Limpiamos después de copiar la plantilla
-
-        descuentos.forEach(desc => {
-            let filaDescHtml = htmlPlantillaDesc
-                .replace('*conceptdiscount*', desc.concepto)
-                .replace('*discountconcept*', desc.monto);
-            $contenedorDescuentos.append(filaDescHtml);
-        });
     }    
 
+    function ejecutarRenderizadoQuote($contenedor, $cuerpoTabla, $filaPlantilla, datosGenerales, productos,descuentos) {
+        // 1. Limpiar productos previos (excepto la plantilla)
+        $cuerpoTabla.find('tr:not(.item-fila)').remove();
 
-    // 3. Lógica para ocultar IDs si el valor es 0
-    $.each(datosGenerales, function(key, val) {
-        // Buscamos el elemento que tenga el ID igual a la 'key'
-        let $elemento = $contenedor.find('#' + key);
-        
-        if (val === 0 || val === "0") {
-            $elemento.hide(); // Oculta el elemento si es cero
-        } else {
-            $elemento.show(); // Se asegura de mostrarlo si tiene valor
+        // 2. Procesar y agregar cada producto
+        productos.forEach(producto => {
+            let nuevaFilaHtml = $filaPlantilla[0].outerHTML;
+            $.each(producto, function(key, val) {
+                let regex = new RegExp('\\*' + key + '\\*', 'g');
+                nuevaFilaHtml = nuevaFilaHtml.replace(regex, val ?? '');
+            });
+            
+            let $nuevaFila = $(nuevaFilaHtml).removeClass('item-fila').css('display', ''); // Quitar display:none
+            $cuerpoTabla.append($nuevaFila);
+        });
+
+
+        const $contenedorDescuentos = $contenedor.find('#extra_discounts');
+        const $filaOriginal = $contenedorDescuentos.find('tr').first();
+
+        if ($filaOriginal.length > 0) {
+            const htmlPlantillaDesc = $filaOriginal[0].outerHTML;
+            $contenedorDescuentos.empty(); // Limpiamos después de copiar la plantilla
+
+            descuentos.forEach(desc => {
+                let filaDescHtml = htmlPlantillaDesc
+                    .replace('*conceptdiscount*', desc.concepto)
+                    .replace('*discountconcept*', desc.monto);
+                $contenedorDescuentos.append(filaDescHtml);
+            });
+        }    
+
+
+        // 3. Lógica para ocultar IDs si el valor es 0
+        $.each(datosGenerales, function(key, val) {
+            // Buscamos el elemento que tenga el ID igual a la 'key'
+            let $elemento = $contenedor.find('#' + key);
+            
+            if (val === 0 || val === "0") {
+                $elemento.hide(); // Oculta el elemento si es cero
+            } else {
+                $elemento.show(); // Se asegura de mostrarlo si tiene valor
+            }
+
+            // 4. Reemplazar etiquetas en el HTML (Mantenemos tu lógica de reemplazo)
+            let regex = new RegExp('\\*' + key + '\\*', 'g');
+            let contenidoActual = $contenedor.html();
+            $contenedor.html(contenidoActual.replace(regex, val ?? ''));
+        });
+
+        <?php
+        if ($account['Deposit'] == 1){
+            if ($account['DepositType'] == 'percentage'){
+                echo "$('#tip-adv-pay-qnt').hide();";
+            }
+            else{
+                if (($account['DepositAmount'] * 1) == ($PQ * 1) OR $PQ == 0 )
+                    echo "$('#custom-pay-qnt').val('');";
+                else
+                    echo "$('#custom-pay-qnt').val($PQ);";
+
+                echo "$('#tip-adv-pay-pct').hide();";
+                echo "$('#pay-qnt').html('$'+'". number_format( $account['DepositAmount'],2,'.',',') ."');";
+                echo "$('#pay-qnt').attr('data-apay', '".$account['DepositAmount']."');";
+                
+            }
+        }else{
+            
+            echo "$('#tr-apay').hide();";
+            echo "$('#tip-adv-pay-qnt').hide();";
+            echo "$('#tip-adv-pay-pct').hide();";
         }
 
-        // 4. Reemplazar etiquetas en el HTML (Mantenemos tu lógica de reemplazo)
-        let regex = new RegExp('\\*' + key + '\\*', 'g');
-        let contenidoActual = $contenedor.html();
-        $contenedor.html(contenidoActual.replace(regex, val ?? ''));
-    });
+        ?>
 
-}
+    }
 </script>
 
 
