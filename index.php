@@ -11,14 +11,9 @@
 
     </style>
 </head>
-
-
-
 <body>
-
 <?php require_once TEMPLATE.'nav.php'; ?>
 <?php require_once TEMPLATE.'hero.php'; ?>
-
 <div class="container py-5">
     <?php  require_once TEMPLATE.'cat.php'; ?>
     <hr class="my-5">
@@ -33,20 +28,15 @@
     <?php require_once TEMPLATE.'loc.php'; ?>
     <hr class="my-5">
     <?php require_once TEMPLATE.'contact.php'; ?>
-
 </div>
 <?php require_once TEMPLATE.'social.php'; ?>
-
 <?php 
     if ( $account['Couppon'] == 1){
         require_once TEMPLATE.'couponcard.php'; 
     }
 ?>
-
 <?php require_once TEMPLATE.'cart.php'; ?>
-
 <?php require_once TEMPLATE.'scripts.php'; ?>
-
 <script src="<?php echo TEMPLATE;?>js/idx-template.js"></script>
 <?php require_once 'scripts.php'; ?>
 <script src="js/general.js"></script>

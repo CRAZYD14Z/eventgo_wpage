@@ -146,6 +146,7 @@
         $organization =  $respuesta['organization'];
         $venue =  $respuesta['venue'];
         $discounts =  $respuesta['discounts'];
+        $gifcrds =  $respuesta['gifcrds'];
 
     ?>
 
@@ -342,6 +343,17 @@ const FHFp = FHF.split(' ')
             descuentos.push(descuento".$discount['Id'].");";
         }
     }      
+    if ($gifcrds) {
+        foreach ($gifcrds as $discount) {
+            echo "
+            let descuento".$discount['Id']." = {
+                concepto: '".$discount['Descript']."',
+                monto:'".$discount['AmountVal']."'
+            };
+            descuentos.push(descuento".$discount['Id'].");";
+        }
+    }   
+    
 
 ?>
 
@@ -595,8 +607,16 @@ const FHFp = FHF.split(' ')
             $contenedorDescuentos.empty(); // Limpiamos después de copiar la plantilla
 
             descuentos.forEach(desc => {
+
+                let gfcrd  ='';
+                const codigo = desc.concepto;
+                const regex = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
+                if (regex.test(codigo)) {
+                    gfcrd = 'Tarjeta de regalo<br>'
+                }     
+
                 let filaDescHtml = htmlPlantillaDesc
-                    .replace('*conceptdiscount*', desc.concepto)
+                    .replace('*conceptdiscount*', gfcrd+desc.concepto)
                     .replace('*discountconcept*', desc.monto);
                 $contenedorDescuentos.append(filaDescHtml);
             });

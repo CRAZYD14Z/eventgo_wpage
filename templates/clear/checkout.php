@@ -13,6 +13,10 @@
                     </div>
                     <div class="row g-3">
                         <div class="col-md-6">
+                            <input type="hidden" id="Id">
+                            <input type="hidden" id="Type">
+                            <input type="hidden" id="Idgfc">
+                            <input type="hidden" id="Agfc">
                             <label class="form-label small fw-bold">Nombre</label>
                             <input type="text" id="nombre_cliente" class="form-control" >
                         </div>
@@ -173,7 +177,35 @@
                             <div class="d-flex justify-content-between mb-2">
                                 <span id="chEtiquetaCupon" class="text-muted">Descuento ( No Aplicado )</span>
                                 <span id="chDescuento" class="fw-bold">$0.00</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span  class="text-muted">Código de tarjeta de regalo</span>
+                                <span  class="fw-bold"></span>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span id="" class="text-muted">
+                                    <div class="input-group input-group-sm mb-3">
+                                        <input 
+                                            type="text" 
+                                            id="gifcardcode" 
+                                            class="form-control" 
+                                            placeholder="XXXX-XXXX-XXXX-XXX" 
+                                            maxlength="20"
+                                        >
+                                        <button 
+                                            class="btn btn-outline-secondary" 
+                                            type="button" 
+                                            id="btn-validar"
+                                        >
+                                            Validar
+                                        </button>
+                                    </div>
+                                </span>
+                                <span id="chTarjetaRegalo" class="fw-bold">$0.00</span>
                             </div>                            
+
                             <hr>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="h5 mb-0 fw-bold">Total Final</span>

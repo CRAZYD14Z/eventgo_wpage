@@ -896,3 +896,25 @@ function mostrarPopup(mensaje) {
         setTimeout(() => popup.remove(), 500);
     }, 3000);
 }
+
+function lanzarAlerta(mensaje, tipo = 'info') {
+    const config = {
+        error:   { titulo: 'Error',   clase: 'text-danger',  bg: 'bg-danger',  btn: 'btn-danger',  icon: 'bi-x-circle' },
+        warning: { titulo: 'Atención',clase: 'text-warning', bg: 'bg-warning', btn: 'btn-warning', icon: 'bi-exclamation-triangle' },
+        success: { titulo: 'Éxito',    clase: 'text-success', bg: 'bg-success', btn: 'btn-success', icon: 'bi-check-circle' },
+        info:    { titulo: 'Aviso',    clase: 'text-info',    bg: 'bg-info',    btn: 'btn-info',    icon: 'bi-info-circle' }
+    };
+
+    const c = config[tipo] || config.info;
+
+    // Aplicar estilos y contenido
+    $('#modalTitulo').text(c.titulo).attr('class', 'fw-bold text-uppercase ' + c.clase);
+    $('#mensajeAlerta').text(mensaje);
+    $('#modalHeaderColor').attr('class', 'py-1 ' + c.bg);
+    $('#modalIcono').html(`<i class="bi ${c.icon} ${c.clase}"></i>`);
+    $('#btnCerrarModal').attr('class', 'btn btn-sm px-4 ' + c.btn);
+
+    // Mostrar modal
+    const instance = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalAlerta'));
+    instance.show();
+}

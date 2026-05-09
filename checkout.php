@@ -77,8 +77,8 @@ data.items.forEach(item => {
             <div class="item-checkout mb-4 border-bottom pb-3">
                 <div class="d-flex align-items-start">
                     <img src="${item.imagen || 'https://via.placeholder.com/80'}" 
-                         class="rounded-3 border me-3" 
-                         style="width: 70px; height: 70px; object-fit: cover;">
+                        class="rounded-3 border me-3" 
+                        style="width: 70px; height: 70px; object-fit: cover;">
                     
                     <div class="flex-grow-1">
                         <div class="d-flex justify-content-between">
@@ -191,6 +191,110 @@ function cargar_accesorios(itemId){
     });    
 }
 
+$('#btn-validar').on('click', function() {
+    const tel = $('#tel_cliente').val().trim();
+    const email = $('#email_cliente').val().trim();
+    const code = $('#gifcardcode').val().trim();
+
+    // Caso: Error de campos vacíos (Warning)
+    if (tel === '' && email === '') {
+        lanzarAlerta('Para aplicar el código de regalo, debe identificarse con el teléfono o correo.', 'warning');
+        return;
+    }
+
+    // Caso: Error de formato (Error)
+    const regexGifCard = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/i;
+    if (!regexGifCard.test(code)) {
+        lanzarAlerta('El código de Gift Card es incorrecto.', 'error');
+        return;
+    }
+
+
+    const paqueteFinal = {
+        tel: tel,
+        email: email,
+        code: code
+    };    
+
+
+    $.ajax({
+        url: '<?php echo URL_API?>validate_gifcard',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(paqueteFinal),
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'X-ID-CLIENT': '<?= ID_CLIENT ?>'
+        },        
+        beforeSend: function() {
+            $('#btn-validar').prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Validando...');
+        },
+        success: function(response) {
+            if (response.status === 'success') {
+                // Limpiar carrito tras éxito
+                lanzarAlerta(response.message, 'success');
+                $('#btn-validar').prop('disabled', false).text('Validar');
+                $('#gifcardcode').prop('readonly', true);
+                let Amount = response.data.Amount * 1;
+                $('#chTarjetaRegalo').html( `$${Amount.toFixed(2)}` )
+                
+                $('#Id').val(response.customer.Id)
+                $('#Type').val(response.tipo)
+                $('#Agfc').val(response.data.Amount)
+                $('#Idgfc').val(response.data.Id)
+                
+
+                let Total = $('#checkout_total').text();
+                
+                Total = Total.replace("$", "");
+
+                Total = (Total * 1 ) - (Amount * 1);
+                $('#checkout_total').text(`$${Total.toFixed(2)}`)
+
+                if(response.tipo=='C') {
+                    $('#nombre_cliente').val(response.customer.Nombres);
+                    $('#apellidos').val(response.customer.Apellidos);
+                }
+                else{
+                    $('#organizacion').val(response.customer.Nombre);
+                }
+
+                
+                $('#tel_cliente').val(response.customer.TelefonoCelular);
+                $('#email_cliente').val(response.customer.Correo);
+                $('#dir_cliente').val(response.customer.Direccion);
+                $('#colonia_cliente').val(response.customer.Direccion2);
+                $('#ciudad_cliente').val(response.customer.Ciudad);
+                $('#colonia_cliente').val();
+                $('#cp_cliente').val(response.customer.CP);
+
+                
+
+            } else {
+                lanzarAlerta(response.message, 'error');
+                $('#btn-validar').prop('disabled', false).text('Validar');
+            }
+        },
+        error: function() {
+            lanzarAlerta("Error de conexión con el servidor.", 'error');
+            $('#btn-validar').prop('disabled', false).text('Validar');
+        }
+    });    
+
+
+    // Caso: Todo bien (Success)
+    //lanzarAlerta('Código validado correctamente.', 'success');
+    // 4. Si todo es correcto, procedemos a la API
+    /*
+    enviarConsultaAPI({
+        nombre,
+        apellidos,
+        organizacion,
+        code
+    });
+    */
+});
+
 
 $('#btn_copiar_direccion').on('click', function() {
     $('#dir_evento').val($('#dir_cliente').val())
@@ -200,9 +304,6 @@ $('#btn_copiar_direccion').on('click', function() {
 });
 
 $('#btn_enviar_cotizacion').on('click', function() {
-
-
-
   // Limpiar mensajes de error previos
     $('.invalid-feedback').remove();
     $('.is-invalid').removeClass('is-invalid');
@@ -303,14 +404,11 @@ if (email !== '') {
         return false;
     }
 
-
-
-
-
-
     const token = "<?php echo $jwt;?>"; // Aquí va tu variable del token
     // 1. Recolectar Datos de Contacto
     const contacto = {
+        Id: $('#Id').val().trim(),
+        Type: $('#Type').val().trim(),
         nombre: $('#nombre_cliente').val().trim(),
         apellidos: $('#apellidos').val().trim(),
         organizacion: $('#organizacion').val().trim(),
@@ -340,9 +438,11 @@ if (email !== '') {
     const cupon = {
         cupon: $('#CUPON').val().trim(),
         tipocupon: $('#TIPOCUPON').val().trim(),
-        descuento: $('#DESCUENTO').val().trim()
-    };    
-
+        descuento: $('#DESCUENTO').val().trim(),
+        idgfc: $('#Idgfc').val().trim(),
+        gfc: $('#gifcardcode').val().trim(),
+        agfc: $('#Agfc').val().trim()
+    };
 
     // 3. Obtener Carrito (Productos + Cabecera de fecha/hora)
     const datosCarrito = obtenerDatosRaw(); 
@@ -385,7 +485,6 @@ if (email !== '') {
         },
         success: function(response) {
             if (response.status === 'success') {
-                // Limpiar carrito tras éxito
                 //$('#btn_enviar_cotizacion').prop('disabled', false).text('CONFIRMAR RESERVA');
                 localStorage.removeItem('ds_jumper_cart');
                 window.location.href = 'quote.php?Id=' + response.UUID;

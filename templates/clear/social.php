@@ -22,3 +22,20 @@
         </div>
         <p class="mt-4 text-muted small">&copy; 2026 <?php echo COMPANY_NAME?>. Todos los derechos reservados.</p>
     </footer>  
+
+<!-- Modal Dinámico -->
+<div class="modal fade" id="modalAlerta" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div id="modalHeaderColor" class="py-2" style="height: 4px;"></div> <!-- Barra de color superior -->
+      <div class="modal-body text-center py-4">
+        <div id="modalIcono" class="fs-1 mb-2"></div> <!-- Aquí va el icono -->
+        <h6 id="modalTitulo" class="fw-bold text-uppercase"></h6>
+        <p id="mensajeAlerta" class="mb-0 text-muted small"></p>
+      </div>
+      <div class="modal-footer border-0 pt-0 justify-content-center">
+        <button type="button" class="btn btn-sm px-4" id="btnCerrarModal" data-bs-dismiss="modal">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>    
