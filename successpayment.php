@@ -65,9 +65,9 @@
         $account = json_decode(API($jwt,$api_url,$data,'GET'), true);
 
 
-        $api_url = URL_API."document_center";
-        $data = json_encode(['Tipo' => 'email','IdTemplate' => 8,'Idioma' => $lang]);
-        $Template = json_decode(API($jwt,$api_url,$data,'GET'), true);        
+        //$api_url = URL_API."document_center";
+        //$data = json_encode(['Tipo' => 'email','IdTemplate' => 8,'Idioma' => $lang]);
+        //$Template = json_decode(API($jwt,$api_url,$data,'GET'), true);        
 
 
         $api_url = URL_API."quote_data";
@@ -79,60 +79,9 @@
         $customer = $respuesta['customer'];        
         $organization =  $respuesta['organization'];
         $venue =  $respuesta['venue'];
-        $discounts =  $respuesta['discounts'];    
-/*
-        $cuerpo = "<html>".$Template['Template']."</html>";
+        $discounts =  $respuesta['discounts'];
+        $gifcrds =  $respuesta['gifcrds'];    
 
-                if ($customer){
-                    $nombreCliente = $customer['Nombres'];
-                    $correoCliente =$customer['Correo'];
-                }
-                else{
-                    $nombreCliente = $organization['Nombre'];
-                    $correoCliente =$organization['Correo'];
-
-                }    
-
-        $valores = [
-            'company_logo'      => $account['Logo'],
-            'company_name' => $account['NombreCompania'],
-            'ctfirstname'  => $nombreCliente,
-            'leadid'       => $lead['Folio'],
-            'total'  => $lead['Total'],
-            'apayment'  => $lead['DepositAmount'],
-            'balancedue'  => $lead['Balance'],
-            'link_to_accept'  => '',
-            'eventstreet' => $venue['Direccion'],
-            'eventcity'    => $venue['Ciudad'],
-            'startdate'  => $lead['StartDateTime'],
-            'company_name'  => $account['NombreCompania'],
-            'company_phone'  => $account['TelefonoOficina'],
-            'company_city'  => $account['Ciudad'],
-
-        ];       
-
-        $cuerpo = generarHtmlCotizacion($cuerpo, $valores);
-
-        $datosConexion = [
-            'host'             => $account['ServidorS'],
-            'username'         => $account['UsuarioS'],
-            'password'         => $account['PasswordS'],
-            'port'             => $account['PortS'],
-            'encryption'       => '',
-            'nombre_remitente' => $account['NombreCompania']
-        ];
-        $archivos = [];
-
-        $resultado = enviarEmail(
-            $datosConexion, 
-            $correoCliente, 
-            $header,
-            $cuerpo,
-            $archivos,
-            $cotizacion['Contrato'],
-            $cotizacion['UUID'].".PDF"
-        );    
-*/
         // Supongamos que estas son tus variables con los datos de la DB
         //$pdfContenido = $cotizacion['Contrato']; // El binario del PDF
         $pdfNombre = $cotizacion['UUID'].".PDF";   // El nombre original (ej: "contrato_45.pdf")
@@ -142,7 +91,7 @@
 
         // Creamos el Data URI
         $pdfDataUri = "data:application/pdf;base64," . $base64;   
-
+/*
         function generarHtmlCotizacion($html, $datos) {
             $busqueda = array_map(function($key) {
                 return '*' . $key . '*';
@@ -150,7 +99,7 @@
             $sustitucion = array_values($datos);
             return str_replace($busqueda, $sustitucion, $html);
         }
-
+*/
 
 ?>
 
@@ -169,17 +118,33 @@
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between mb-3">
                         <span class="text-muted">Monto Pagado (Anticipo):</span>
-                        <span class="fw-bold text-success">+$<?php echo number_format($lead['DepositAmount'], 2, '.', ',') ;?></span>
+                        <span class="fw-bold text-success">+$<?php echo number_format($lead['SubTotal'] + $lead['TaxAmount'] + $lead['Tip'] - $lead['Balance'], 2, '.', ',') ;?></span>
                     </div>
                     <div class="d-flex justify-content-between mb-3">
                         <span class="text-muted">Total del Servicio:</span>
-                        <span class="fw-medium">$<?php echo number_format($lead['Total'], 2, '.', ',') ;?></span>
+                        <span class="fw-medium">$<?php echo number_format($lead['SubTotal'] + $lead['TaxAmount'] + $lead['Tip'] , 2, '.', ',') ;?></span>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fw-bold text-dark">Saldo Pendiente:</span>
                         <h4 class="fw-bold mb-0 text-primary">$<?php echo number_format($lead['Balance'], 2, '.', ',') ;?></h4>
                     </div>
+                    <?php 
+                    if ($gifcrds){
+                        $SaldoGC = 0;
+                        foreach ($gifcrds as $discount) {
+                            $SaldoGC = $discount['gifcardAmount'];
+                        }
+                        //$SaldoGC = $SaldoGC - $lead['SubTotal'] + $lead['TaxAmount'] + $lead['Tip'];
+                    ?>
+
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-dark">Nuevo saldo de la tarjeta de regalo:</span>
+                        <h4 class="fw-bold mb-0 text-primary">$<?php echo number_format($SaldoGC, 2, '.', ',') ;?></h4>
+                    </div>                    
+
+                    <?php }?>
                     <small class="d-block text-center mt-3 text-muted">
                         * El saldo restante se liquidará el día del evento.
                     </small>

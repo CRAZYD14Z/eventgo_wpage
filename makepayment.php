@@ -1,4 +1,5 @@
 <?php 
+    ob_start(); // Inicia el búfer
     require 'vendor/autoload.php';
     require_once 'config.php';
     require_once 'functions.php';
@@ -23,31 +24,31 @@
         .text-detail { font-size: 0.85rem; color: #6c757d; }
 
 
-#pdf-canvas {
-    max-height: 160px; /* Limita la altura del preview */
-    object-fit: contain;
-    background-color: #eee;
-}
+        #pdf-canvas {
+            max-height: 160px; /* Limita la altura del preview */
+            object-fit: contain;
+            background-color: #eee;
+        }
 
-.anticipo-card {
-    cursor: pointer;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    transition: all 0.2s;
-}
+        .anticipo-card {
+            cursor: pointer;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
 
-.selected-anticipo {
-    border-color: #0d6efd;
-    background-color: #f0f7ff;
-    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.2);
-}        
+        .selected-anticipo {
+            border-color: #0d6efd;
+            background-color: #f0f7ff;
+            box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.2);
+        }        
 
-.spinner-border {
-    --bs-spinner-width: 1.2rem;
-    --bs-spinner-height: 1.2rem;
-    vertical-align: middle;
-    margin-right: 8px;
-}
+        .spinner-border {
+            --bs-spinner-width: 1.2rem;
+            --bs-spinner-height: 1.2rem;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
 
     </style>
 </head>
@@ -83,28 +84,6 @@
             die();
         }
 
-/*
-        $ID_OPAY='mles9ufd4m3rlilw00i8';
-        $SK_OPAY='sk_ab545fdf98b446e78ed7ef908d1687a2';
-        $PK_OPAY='pk_ed306f11c3764a9da955092ee7350160';
-
-        $APPID_SQUARE='sandbox-sq0idb-yPqsgRsRdPMdHTk7zApWPg';
-        $LOCID_SQUARE='LZZBFCYEW6Y2M';
-        $TOKEN_SQUARE='EAAAl9cDwyU4FQwzfkJ8ge4kEYjsThSgsR6Cww34jRhn6ayhdnsB6S26ajhcf6b4';
-
-        define('id_OPAY', $ID_OPAY);
-        define('sk_OPAY', $SK_OPAY);
-        define('pk_OPAY', $PK_OPAY);
-
-        define('appId_square', $APPID_SQUARE);
-        define('locId_square', $LOCID_SQUARE);
-        define('accessToken_square',$TOKEN_SQUARE);        
-*/
-
-        
-
-
-
         $PayPlatform = $account['Pay_platform'];
 
         //$api_url = URL_API."tip_deposit";
@@ -133,6 +112,18 @@
             $Ape ='';
             $Correo = $organization['Correo'];
         }
+
+        if ($lead['Total'] <= 0){
+
+            $api_url = URL_API."gifcard_pay";
+            $data = json_encode(['token' => $token]);            
+            $respuesta = json_decode(API($jwt,$api_url,$data,'POST'), true);
+
+            header("Location: successpayment.php?Id=".$token."&TId=");
+            exit();                
+
+        }
+    ob_end_flush(); // Envía el contenido al final        
 ?>
 
 <div class="container py-5">

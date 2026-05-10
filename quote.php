@@ -133,7 +133,6 @@
 
         $api_url = URL_API."tip_deposit";
         $data = json_encode(['tip' => $Tip,'apay' => $APay, 'pq' => $PQ ,'quote' => $cotizacion['IdQuote']]);
-        
         $Tips = json_decode(API($jwt,$api_url,$data,'POST'), true);
         
         $api_url = URL_API."quote_data";
@@ -312,6 +311,7 @@ const FHFp = FHF.split(' ')
         salestax: "<?php echo $lead['TaxAmount']?>",
         tip: "<?php echo $lead['Tip']?>",
         total: "<?php echo $lead['Total']?>",
+        totalbt: "<?php echo $lead['TotalBT']?>",
         apayment: "<?php echo $lead['DepositAmount']?>",
         <?php  if ($account['Deposit'] == 1){?>
             balancedue: "<?php if ($lead['BalanceQ'] == ""){echo $lead['Total'] - $lead['DepositAmount'];}else{echo $lead['BalanceQ'];}?>",
@@ -382,7 +382,7 @@ const FHFp = FHF.split(' ')
         $(document).on('click', '.btn-tip', function() {
             
             const porcentaje = $(this).data('tip');
-            const subtotal = parseFloat(datosGenerales.total) || 0; // Ajusta según tu variable de precio
+            const subtotal = parseFloat(datosGenerales.totalbt) || 0; // Ajusta según tu variable de precio
             montoPendiente = (subtotal * (porcentaje / 100)).toFixed(2);
             
             abrirModalConfirmacion(montoPendiente);
