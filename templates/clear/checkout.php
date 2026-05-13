@@ -128,6 +128,7 @@
                             </select>                            
 
                         </div>
+<!--
                         <div class="col-md-6">
                             <label class="form-label small fw-bold">Excluir Impuestos</label>
                             <input type="text" id="tax" class="form-control">
@@ -136,6 +137,7 @@
                             <label class="form-label small fw-bold">Codigo Cupón</label>
                             <input type="text" id="cupon" class="form-control">
                         </div>                        
+-->                        
                     </div>
                 </div>
             </div>
@@ -191,7 +193,7 @@
                                             type="text" 
                                             id="gifcardcode" 
                                             class="form-control" 
-                                            placeholder="XXXX-XXXX-XXXX-XXX" 
+                                            placeholder="XXXX-XXXX-XXXX-XXXX" 
                                             maxlength="20"
                                         >
                                         <button 
@@ -211,7 +213,7 @@
                                 <span class="h5 mb-0 fw-bold">Total Final</span>
                                 <div class="text-end">
                                     <span id="checkout_total" class="h4 mb-0 fw-bold text-primary">$0.00</span>
-                                    <small class="d-block text-muted" style="font-size: 0.6rem;">MXN - IVA Incluido</small>
+                                    <small class="d-block text-muted" style="font-size: 0.6rem;">Aplican cargos extras + Impuestos</small>
                                 </div>
                             </div>
                             
