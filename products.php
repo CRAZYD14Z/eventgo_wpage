@@ -1,4 +1,6 @@
 <?php 
+    ob_start();
+    session_start();
     require 'vendor/autoload.php';
     require_once 'config.php';
     require_once 'functions.php';
@@ -30,7 +32,7 @@
 <?php require_once 'scripts.php'; ?>
 
 <script src="<?php echo URL_BASE."/".TEMPLATE;?>js/idx-template.js"></script>
-<script src="<?php echo URL_BASE."/";?>js/general.js"></script>
+<script src="<?php echo URL_BASE."/";?>js/general.php"></script>
 <script>
 
     $(document).ready(function() {
@@ -43,7 +45,8 @@
             data: JSON.stringify({Category: '<?php echo $Category?>',FI:$('#FI').val(),FF:$('#FF').val(),HI:$('#hInicio').val(),HF:$('#hFin').val()}),
             headers: {
                 'Authorization': 'Bearer ' + token,
-                'X-ID-CLIENT': '<?= ID_CLIENT ?>'
+                'X-ID-CLIENT': '<?= ID_CLIENT ?>',
+                'LNG':'<?= $_SESSION['Idioma'] ?>'
             },        
             beforeSend: function() {
                 contenedor.innerHTML = '<div class="text-center">Cargando productos...</div>';

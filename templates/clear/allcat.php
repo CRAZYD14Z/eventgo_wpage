@@ -1,5 +1,10 @@
+<?php 
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "allcat"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+?> 
     <section class="mb-5">
-        <h2 class="section-title">Explora Todo el Catálogo</h2>
+        <h2 class="section-title"><?= Trd(1) ?></h2>
         <div class="row g-4">
                 <?php
                     $api_url = URL_API."categories";
@@ -15,8 +20,5 @@
                         }        
                     } 
                 ?>
-
-
-            
         </div>
     </section>

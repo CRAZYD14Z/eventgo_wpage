@@ -1,4 +1,6 @@
 <?php 
+    ob_start();
+    session_start();
     require 'vendor/autoload.php';
     require_once 'config.php';
     require_once 'functions.php';
@@ -11,7 +13,14 @@
 
 <body>
 
-<?php require_once TEMPLATE.'nav.php'; ?>
+<?php 
+    require_once TEMPLATE.'nav.php'; 
+    
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "tnks"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);    
+?>
+
 <?php 
 $idLead         = $_GET['IdLead'] ?? null;
 $tokenRecibido  = $_GET['token'] ?? null;
@@ -34,18 +43,18 @@ if ($data) {
                     <div class="mb-4">
                         <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
                     </div>
-                    <h1 class="fw-bold">¡Gracias por tu pago!</h1>
+                    <h1 class="fw-bold"><?= Trd(1) ?></h1>
                     <p class="text-muted fs-5"><?php echo $mensaje; ?></p>
                     <hr>
-                    <p>ID de Transacción: <strong><?php echo $transactionId ?? 'N/A'; ?></strong></p>
-                    <a href="index.php" class="btn btn-primary btn-lg mt-3">Volver al Inicio</a>
+                    <p><?= Trd(2) ?>: <strong><?php echo $transactionId ?? 'N/A'; ?></strong></p>
+                    <a href="index.php" class="btn btn-primary btn-lg mt-3"><?= Trd(3) ?></a>
                 <?php else: ?>
                     <div class="mb-4">
                         <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 4rem;"></i>
                     </div>
-                    <h1 class="fw-bold">Atención</h1>
+                    <h1 class="fw-bold"><?= Trd(4) ?></h1>
                     <p class="text-muted"><?php echo $mensaje; ?></p>
-                    <a href="index.php" class="btn btn-outline-secondary mt-3">Regresar</a>
+                    <a href="index.php" class="btn btn-outline-secondary mt-3"><?= Trd(5) ?></a>
                 <?php endif; ?>
             </div>
         </div>
@@ -59,7 +68,7 @@ if ($data) {
 
 <script src="<?php echo TEMPLATE;?>js/idx-template.js"></script>
 <?php require_once 'scripts.php'; ?>
-<script src="js/general.js"></script>
+<script src="js/general.php"></script>
 
 
 </body>

@@ -1,5 +1,6 @@
 <?php 
-    require 'vendor/autoload.php';
+    ob_start();
+    session_start();
     require_once 'config.php';
     require_once 'functions.php';
     require_once TEMPLATE.'head.php'; 
@@ -162,7 +163,7 @@
 <?php require_once 'scripts.php'; ?>
 
 <script src="<?php echo URL_BASE."/".TEMPLATE;?>js/idx-template.js"></script>
-<script src="<?php echo URL_BASE."/";?>js/general.js"></script>
+<script src="<?php echo URL_BASE."/";?>js/general.php"></script>
 <script>
 
     var MAX_STOCK = <?php echo $data['Resultadosp'][0]['Quantity']?>; 

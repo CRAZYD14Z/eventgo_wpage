@@ -1,4 +1,6 @@
 <?php 
+    ob_start();
+    session_start();
     require 'vendor/autoload.php';
     require_once 'config.php';
     require_once 'functions.php';
@@ -86,14 +88,20 @@
 </head>
 <body>
 
-<?php require_once TEMPLATE.'nav.php'; ?>
+<?php 
+    require_once TEMPLATE.'nav.php';
+
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "contract"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+?>
 
 
 <div class="container py-5">
 
 <?php
     if (!isset($_GET['Id'])){
-        echo "Enlace no válido.";
+        echo Trd(1);
         die();
     }
 
@@ -108,22 +116,22 @@
     if ($cotizacion) {
         // Verificar si la fecha actual es mayor a la de expiración
         if ($ahora > $cotizacion['ExpDate']) {
-            echo "Lo sentimos, esta cotización ha caducado el " . $cotizacion['ExpDate']." $ahora";
+            echo Trd(2)." " . $cotizacion['ExpDate']." $ahora";
             die();
         }
     } else {
-        echo "Enlace no válido.";
+        echo Trd(1);
         die();
     }
 
     if ($cotizacion['Contrato'] !=""){
-            echo "El documento ya cuenta con contrato firmado.";
+            echo Trd(3);
             die();        
     }
 ?>
 
 <div id="scroll-indicator">
-    <span>⬇ Deslice hacia abajo para leer y firmar</span>
+    <span>⬇ <?= Trd(4) ?> ⬇</span>
 </div>
 
 <div id="main-container" class="container-fluid">
@@ -131,11 +139,11 @@
         <div class="col-lg-8">
             
             <div class="contract-content">
-                <h1 class="text-center mb-5">Contrato</h1>
+                <h1 class="text-center mb-5"><?= Trd(5) ?></h1>
 
                 <div id="loader-container" class="loader-wrapper">
                     <div class="loader"></div>
-                    <p>Generando contrato...</p>
+                    <p><?= Trd(6) ?></p>
                 </div>
 
                 <div id="Contract" style="display: none;">
@@ -148,26 +156,26 @@
                 </div>
 
                 <div class="signature-area" id="signature-section">
-                    <h4 class="mb-4">Aceptación y Firma</h4>
+                    <h4 class="mb-4"><?= Trd(7) ?></h4>
                     <form id="signature-form">
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Firma Digital</label>
+                            <label class="form-label fw-bold"><?= Trd(8) ?></label>
                             <div class="canvas-container">
                                 <canvas id="signature-pad"></canvas>
                             </div>
                             <div class="mt-2 d-flex justify-content-between">
-                                <small class="text-muted">Use su ratón o dedo para firmar arriba</small>
-                                <button type="button" id="clear-btn" class="btn btn-link btn-sm text-danger text-decoration-none">Borrar firma</button>
+                                <small class="text-muted"><?= Trd(9) ?></small>
+                                <button type="button" id="clear-btn" class="btn btn-link btn-sm text-danger text-decoration-none"><?= Trd(10) ?></button>
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold">Nombre Completo del Firmante</label>
+                            <label class="form-label fw-bold"><?= Trd(11) ?></label>
                             <input type="text" id="signer-name" class="form-control form-control-lg" placeholder="Escriba su nombre completo" required>
                         </div>                        
 
                         <div class="d-grid gap-2 mt-5">
-                            <button type="submit" id="CrearDocumento" class="btn btn-primary btn-lg">Validar y Enviar Contrato</button>
+                            <button type="submit" id="CrearDocumento" class="btn btn-primary btn-lg"><?= Trd(12) ?></button>
                         </div>
                     </form>
                 </div>
@@ -216,7 +224,7 @@
         $('#signature-form').submit(function(e) {
             e.preventDefault();
             if (signaturePad.isEmpty()) {
-                alert("Por favor, firme el documento antes de continuar.");
+                alert("<?= Trd(13) ?>");
                 return;
             }
             
@@ -253,7 +261,7 @@
 
             $('#CrearDocumento')
                 .prop('disabled', true)
-                .html('<i class="fa-solid fa-spinner fa-spin"></i> Procesando...');            
+                .html('<i class="fa-solid fa-spinner fa-spin"></i> <?= Trd(14) ?>');            
 
             fetch('pdf.php', {
                 method: 'POST',
@@ -495,7 +503,7 @@ function ejecutarRenderizadoContract($contenedor, $cuerpoTabla, $filaPlantilla, 
 <?php require_once TEMPLATE.'scripts.php'; ?>
 <?php require_once 'scripts.php'; ?>
 <script src="<?php echo TEMPLATE;?>js/idx-template.js"></script>
-<script src="js/general.js"></script>
+<script src="js/general.php"></script>
 <script>
 </script>
 </body>

@@ -1,5 +1,11 @@
-    <section class="about-section text-center p-5">
-        <h2 class="section-title text-dark">Sobre Nosotros</h2>
+
+<?php 
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "us"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+?> 
+<section class="about-section text-center p-5">
+        <h2 class="section-title text-dark"><?= Trd(1) ?></h2>
         <div class="row align-items-center">
             <div class="col-md-8 text-md-start">
                 <p class="lead mb-4">

@@ -1,8 +1,11 @@
 <?php 
+    ob_start();
+    session_start();
     require 'vendor/autoload.php';
     require_once 'config.php';
     require_once 'functions.php';
     require_once TEMPLATE.'head.php'; 
+
 ?>
     <link rel="stylesheet" href="<?php echo URL_BASE."/";?>css/general.css">
     <style>
@@ -23,7 +26,13 @@
 <?php require_once TEMPLATE.'nav.php'; ?>
 
 <div class="container py-5">
-<?php require_once TEMPLATE.'checkout.php'; ?>
+<?php
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "checkout"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);    
+    require_once TEMPLATE.'checkout.php';
+    $Traducciones_Rsp = $Traducciones;
+?>
 </div>
 
 <?php require_once TEMPLATE.'social.php'; ?>
@@ -33,7 +42,10 @@
 <?php require_once TEMPLATE.'scripts.php'; ?>
 <?php require_once 'scripts.php'; ?>
 <script src="<?php echo URL_BASE."/".TEMPLATE;?>js/idx-template.js"></script>
-<script src="<?php echo URL_BASE."/";?>js/general.js"></script>
+<script src="<?php echo URL_BASE."/";?>js/general.php"></script>
+<?php 
+    $Traducciones = $Traducciones_Rsp;
+?>
 <script>
 
 function cargarResumenCheckout() {
@@ -43,7 +55,7 @@ function cargarResumenCheckout() {
     // 1. Llenar Cabecera
     if (data.cabecera) {
         //alert(data.cabecera.fecha)
-        $('#resumen_fecha').text(data.cabecera.fecha || 'No seleccionada');
+        $('#resumen_fecha').text(data.cabecera.fecha || '<?= Trd(1) ?>');
         $('#resumen_hInicio').text(data.cabecera.hInicio || '--:--');
         $('#resumen_hFin').text(data.cabecera.hFin || '--:--');
     }
@@ -51,7 +63,7 @@ function cargarResumenCheckout() {
     // 2. Llenar Items y Subitems
     $contenedor.empty();
     if (data.items.length === 0) {
-        $contenedor.html('<p class="text-center py-4 text-muted">No hay artículos</p>');
+        $contenedor.html('<p class="text-center py-4 text-muted"><?= Trd(2) ?></p>');
     }
 
 data.items.forEach(item => {
@@ -92,7 +104,7 @@ data.items.forEach(item => {
 
                         <button class="btn btn-link p-0 text-primary small fw-bold text-decoration-none" 
                                 type="button" data-bs-toggle="collapse" data-bs-target="#collapse_${item.id}" onclick="cargar_accesorios(${item.id})">
-                            <i class="fa-solid fa-circle-plus me-1"></i> Personalizar pedido
+                            <i class="fa-solid fa-circle-plus me-1"></i> <?= Trd(3) ?>
                         </button>
 
                         <div class="collapse" id="collapse_${item.id}">
@@ -111,9 +123,10 @@ data.items.forEach(item => {
     $('#checkout_subtotal').text(`$${totales.total.toFixed(2)}`);
 
     let Descuento = 0;
-
-    if (data.cupon.cupon != ""){
-        $('#chEtiquetaCupon').html(` Descuento ( ${data.cupon.code} )`);
+    
+if (data.cupon.code){
+    if (data.cupon.code != ""){
+        $('#chEtiquetaCupon').html(` <?= Trd(4) ?> ( ${data.cupon.code} )`);
         if (data.cupon.type == 'percentage'){
             Descuento = totales.total *  (data.cupon.val / 100);
         }
@@ -123,9 +136,10 @@ data.items.forEach(item => {
         
     }
     else{
-        $('#chEtiquetaCupon').html(` Descuento ( No Aplicado )`);
+        $('#chEtiquetaCupon').html(` <?= Trd(5) ?>`);
     }
-    $('#chDescuento').html(`$${Descuento.toLocaleString('es-MX')}`);
+}
+    $('#chDescuento').html(`$${formatCurrency(Descuento)}`);
 
     if (Descuento < totales.total)
         totales.total = totales.total - Descuento;    
@@ -149,7 +163,7 @@ function cargar_accesorios(itemId){
     const $listaContenedor = $(`#collapse_${itemId}`);
     const token = "<?php echo $jwt;?>"; // Aquí va tu variable del token
 
-    $listaContenedor.html('<div class="text-center py-2"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</div>');
+    $listaContenedor.html('<div class="text-center py-2"><i class="fa-solid fa-spinner fa-spin"></i> <?= Trd(6) ?></div>');
 
     $.ajax({
         url: '<?php echo URL_API?>get_accesories/', // Tu endpoint de API
@@ -157,7 +171,8 @@ function cargar_accesorios(itemId){
         data: { producto_id: itemId },
         headers: {
             'Authorization': 'Bearer ' + token,
-            'X-ID-CLIENT': '<?= ID_CLIENT ?>'
+            'X-ID-CLIENT': '<?= ID_CLIENT ?>',
+            'LNG':'<?= $_SESSION['Idioma'] ?>'
         },
         success: function(response) {
             // Asumiendo que la API devuelve un array de objetos
@@ -181,12 +196,12 @@ function cargar_accesorios(itemId){
                 $listaContenedor.html(html);
                 //$acordeon.data('cargado', true); // Marcar como cargado
             } else {
-                $listaContenedor.html('<p class="small text-muted text-center">No hay accesorios disponibles.</p>');
+                $listaContenedor.html('<p class="small text-muted text-center"><?= Trd(7) ?></p>');
             }
         },
         error: function(xhr) {
             console.error("Error API:", xhr.status);
-            $listaContenedor.html('<p class="small text-danger text-center">Error al cargar accesorios.</p>');
+            $listaContenedor.html('<p class="small text-danger text-center"><?= Trd(8) ?></p>');
         }
     });    
 }
@@ -198,14 +213,14 @@ $('#btn-validar').on('click', function() {
 
     // Caso: Error de campos vacíos (Warning)
     if (tel === '' && email === '') {
-        lanzarAlerta('Para aplicar el código de regalo, debe identificarse con el teléfono o correo.', 'warning');
+        lanzarAlerta('<?= Trd(9) ?>', 'warning');
         return;
     }
 
     // Caso: Error de formato (Error)
     const regexGifCard = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/i;
     if (!regexGifCard.test(code)) {
-        lanzarAlerta('El código de Gift Card es incorrecto.', 'error');
+        lanzarAlerta('<?= Trd(10) ?>', 'error');
         return;
     }
 
@@ -219,15 +234,16 @@ $('#btn-validar').on('click', function() {
 
     $.ajax({
         url: '<?php echo URL_API?>validate_gifcard',
-        type: 'PUT',
+        type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(paqueteFinal),
         headers: {
             'Authorization': 'Bearer ' + token,
-            'X-ID-CLIENT': '<?= ID_CLIENT ?>'
+            'X-ID-CLIENT': '<?= ID_CLIENT ?>',
+            'LNG':'<?= $_SESSION['Idioma'] ?>'
         },        
         beforeSend: function() {
-            $('#btn-validar').prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Validando...');
+            $('#btn-validar').prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> <?= Trd(11) ?>');
         },
         success: function(response) {
             if (response.status === 'success') {
@@ -276,7 +292,7 @@ $('#btn-validar').on('click', function() {
             }
         },
         error: function() {
-            lanzarAlerta("Error de conexión con el servidor.", 'error');
+            lanzarAlerta("<?= Trd(12) ?>.", 'error');
             $('#btn-validar').prop('disabled', false).text('Validar');
         }
     });    
@@ -340,7 +356,7 @@ $('#btn_enviar_cotizacion').on('click', function() {
             $campo.addClass('is-invalid');
             
             // Agregar mensaje de error
-            $campo.after(`<div class="invalid-feedback">${campo.nombre} es obligatorio</div>`);
+            $campo.after(`<div class="invalid-feedback">${campo.nombre} <?= Trd(13) ?></div>`);
             
             if (!primerError) {
                 primerError = $campo;
@@ -358,7 +374,7 @@ if (email !== '') {
         isValid = false;
         $('#email_cliente').addClass('is-invalid');
         if ($('#email_cliente').next('.invalid-feedback').length === 0) {
-            $('#email_cliente').after('<div class="invalid-feedback">Ingresa un correo electrónico válido (ej: usuario@dominio.com)</div>');
+            $('#email_cliente').after('<div class="invalid-feedback"><?= Trd(14) ?> (ej: usuario@dominio.com)</div>');
         }
     }
     
@@ -368,7 +384,7 @@ if (email !== '') {
         isValid = false;
         $('#email_cliente').addClass('is-invalid');
         if ($('#email_cliente').next('.invalid-feedback').length === 0) {
-            $('#email_cliente').after('<div class="invalid-feedback">El dominio del correo no es válido</div>');
+            $('#email_cliente').after('<div class="invalid-feedback"><?= Trd(15) ?></div>');
         }
     }
 }    
@@ -379,7 +395,7 @@ if (email !== '') {
         isValid = false;
         $('#cp_cliente').addClass('is-invalid');
         if ($('#cp_cliente').next('.invalid-feedback').length === 0) {
-            $('#cp_cliente').after('<div class="invalid-feedback">El código postal debe contener solo números</div>');
+            $('#cp_cliente').after('<div class="invalid-feedback"><?= Trd(16) ?></div>');
         }
     }
 
@@ -388,7 +404,7 @@ if (email !== '') {
         isValid = false;
         $('#cp_evento').addClass('is-invalid');
         if ($('#cp_evento').next('.invalid-feedback').length === 0) {
-            $('#cp_evento').after('<div class="invalid-feedback">El código postal debe contener solo números</div>');
+            $('#cp_evento').after('<div class="invalid-feedback"><?= Trd(17) ?></div>');
         }
     }
 
@@ -431,10 +447,9 @@ if (email !== '') {
         referencias: $('#ref_evento').val().trim(),
         superficie: $('#superficie').val().trim(),
         tipo_entrega: $('#tipo_entrega').val().trim(),
-        tax: $('#tax').val().trim(),
         cupon: $('#cupon').val().trim()
     };
-
+    //tax: $('#tax').val().trim(),
     const cupon = {
         cupon: $('#CUPON').val().trim(),
         tipocupon: $('#TIPOCUPON').val().trim(),
@@ -453,7 +468,7 @@ if (email !== '') {
         datosCarrito.cabecera.fecha = datosCarrito.cabecera.fecha + " to  " +datosCarrito.cabecera.fecha;
     // Validación básica
     if (!contacto.nombre || !contacto.telefono || !contacto.correo ||  !datosCarrito.cabecera.fecha) {
-        alert("Por favor completa el nombre, teléfono y la fecha del evento.");
+        alert("<?= Trd(18) ?>.");
         return;
     }
 
@@ -478,10 +493,11 @@ if (email !== '') {
         data: JSON.stringify(paqueteFinal),
         headers: {
             'Authorization': 'Bearer ' + token,
-            'X-ID-CLIENT': '<?= ID_CLIENT ?>'
+            'X-ID-CLIENT': '<?= ID_CLIENT ?>',
+            'LNG':'<?= $_SESSION['Idioma'] ?>'
         },        
         beforeSend: function() {
-            $('#btn_enviar_cotizacion').prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Procesando...');
+            $('#btn_enviar_cotizacion').prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> <?= Trd(19) ?>');
         },
         success: function(response) {
             if (response.status === 'success') {
@@ -490,12 +506,12 @@ if (email !== '') {
                 window.location.href = 'quote.php?Id=' + response.UUID;
             } else {
                 alert("Error: " + response.message);
-                $('#btn_enviar_cotizacion').prop('disabled', false).text('CONFIRMAR RESERVA');
+                $('#btn_enviar_cotizacion').prop('disabled', false).text('<?= Trd(20) ?>');
             }
         },
         error: function() {
-            alert("Error de conexión con el servidor.");
-            $('#btn_enviar_cotizacion').prop('disabled', false).text('CONFIRMAR RESERVA');
+            alert("<?= Trd(12) ?>.");
+            $('#btn_enviar_cotizacion').prop('disabled', false).text('<?= Trd(20) ?>');
         }
     });
 });

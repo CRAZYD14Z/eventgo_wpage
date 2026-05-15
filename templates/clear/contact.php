@@ -1,3 +1,8 @@
+    <?php 
+        $api_url = URL_API."Traducciones_web";
+        $data = json_encode(['program' => "contact"]);
+        $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+    ?> 
 
     <?php
         if (isset($_POST['submit_contact'])) {
@@ -17,7 +22,7 @@
             $cuerpo = "
             <html>
             <head>
-                <title>Detalles del contacto</title>
+                <title>".Trd(1)."</title>
                 <style>
                     body { font-family: Arial, sans-serif; }
                     .contacto { background-color: #f5f5f5; padding: 20px; border-radius: 5px; }
@@ -28,32 +33,31 @@
             </head>
             <body>
                 <div class='contacto'>
-                    <h2>Detalles del contacto</h2>
+                    <h2>".Trd(1)."</h2>
                     
                     <div class='campo'>
-                        <span class='etiqueta'>Nombre:</span> $nombre
+                        <span class='etiqueta'>".Trd(2).":</span> $nombre
                     </div>
                     
                     <div class='campo'>
-                        <span class='etiqueta'>Correo:</span> $email
+                        <span class='etiqueta'>".Trd(3).":</span> $email
                     </div>
                     
                     <div class='campo'>
-                        <span class='etiqueta'>Teléfono:</span> $telefono
+                        <span class='etiqueta'>".Trd(4).":</span> $telefono
                     </div>
                     
                     <div class='campo'>
-                        <span class='etiqueta'>Asunto:</span> $asunto
+                        <span class='etiqueta'>".Trd(5).":</span> $asunto
                     </div>
                     
                     <div class='campo'>
-                        <span class='etiqueta'>Mensaje:</span>
+                        <span class='etiqueta'>".Trd(6).":</span>
                         <div class='mensaje'>$mensaje</div>
                     </div>
                 </div>
             </body>
             </html>";
-
 
             $rutaArchivo ='';
             $contenidoBase64 = '';
@@ -68,9 +72,9 @@
             $api_url = URL_API."sendmail";
             $data = json_decode(API($jwt,$api_url,$data,'POST'), true);   
             if ($data['send']){
-                $respuestaCorreo = "<div class='alert alert-success' id='EmailMessage'>¡Mensaje enviado con éxito!</div>";
+                $respuestaCorreo = "<div class='alert alert-success' id='EmailMessage'>".Trd(7)."</div>";
             } else {
-                $respuestaCorreo = "<div class='alert alert-danger' id='EmailMessage'>Error al enviar. Intenta más tarde.</div>";
+                $respuestaCorreo = "<div class='alert alert-danger' id='EmailMessage'>".Trd(8)."</div>";
             }
         }
     ?>
@@ -79,32 +83,32 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card border-0 shadow-lg p-4">
-                    <h2 class="text-center fw-bold mb-4">Contáctanos</h2>
+                    <h2 class="text-center fw-bold mb-4"><?= Trd(9) ?></h2>
                     <div id="form-feedback" class="mb-3"></div>
                     <form id="contactForm" method="POST" action="">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label">Nombre</label>
-                                <input type="text" name="nombre" class="form-control" placeholder="Tu nombre" required>
+                                <label class="form-label"><?= Trd(10) ?></label>
+                                <input type="text" name="nombre" class="form-control" placeholder="<?= Trd(11) ?>" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Correo Electrónico</label>
-                                <input type="email" name="email" class="form-control" placeholder="email@ejemplo.com" required>
+                                <label class="form-label"><?= Trd(12) ?></label>
+                                <input type="email" name="email" class="form-control" placeholder="email@domain.com" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Teléfono de contacto</label>
-                                <input type="tel" name="telefono" class="form-control"placeholder="Ej: +52 33 1234 5678" required>
+                                <label class="form-label"><?= Trd(13) ?></label>
+                                <input type="tel" name="telefono" class="form-control"placeholder="##### #####" required>
                             </div>                            
                             <div class="col-12">
-                                <label class="form-label">Asunto</label>
-                                <input type="text" name="asunto" class="form-control" placeholder="¿En qué podemos ayudarte?" required>
+                                <label class="form-label"><?= Trd(14) ?></label>
+                                <input type="text" name="asunto" class="form-control" placeholder="<?= Trd(15) ?>" required>
                             </div>
                             <div class="col-12">
-                                <label class="form-label">Mensaje</label>
-                                <textarea class="form-control" name="mensaje" rows="4" placeholder="Escribe tu mensaje aquí..." required></textarea >
+                                <label class="form-label"><?= Trd(16) ?></label>
+                                <textarea class="form-control" name="mensaje" rows="4" placeholder="<?= Trd(17) ?>" required></textarea >
                             </div>
                             <div class="col-12 text-center mt-4">
-                                <button type="submit" name="submit_contact" class="btn btn-primary btn-lg px-5">Enviar Mensaje</button>
+                                <button type="submit" name="submit_contact" class="btn btn-primary btn-lg px-5"><?= Trd(18) ?></button>
                             </div>
                         </div>
                     </form>
@@ -137,13 +141,13 @@
 
         if (!emailRegex.test(emailInput.value)) {
             event.preventDefault();
-            feedback.innerHTML = `<div class="alert alert-danger">Por favor, ingresa un correo válido.</div>`;
+            feedback.innerHTML = `<div class="alert alert-danger"><?= Trd(19) ?></div>`;
             return;
         }
 
         if (!telRegex.test(telInput.value)) {
             event.preventDefault();
-            feedback.innerHTML = `<div class="alert alert-danger">El formato del teléfono no es válido.</div>`;
+            feedback.innerHTML = `<div class="alert alert-danger"><?= Trd(20) ?></div>`;
             return;
         }        
 

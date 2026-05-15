@@ -1,4 +1,12 @@
 <?php
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    if (!isset($_SESSION['Idioma'])) {
+        $_SESSION['Idioma'] = LANG ;
+    }
+
     use Firebase\JWT\JWT;
     
     $payload = [
@@ -20,8 +28,8 @@
             "Authorization: Bearer $JWT",        // ENVIAMOS EL JWT AQUÍ
             "Content-Type: application/json",
             "Accept: application/json",
-            "X-ID-CLIENT: $IdCliente"
-        ]);
+            "X-ID-CLIENT: $IdCliente",
+            "LNG: ".$_SESSION['Idioma']]);
 
         $response = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);    
@@ -64,6 +72,9 @@
 
     }
 
-    //die();
+function Trd($Idt){
+    global $Traducciones;
+    return $Traducciones[$Idt];
+}
 
 ?>

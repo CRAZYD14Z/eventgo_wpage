@@ -1,5 +1,6 @@
 <?php 
-    ob_start(); // Inicia el búfer
+    ob_start();
+    session_start();
     require 'vendor/autoload.php';
     require_once 'config.php';
     require_once 'functions.php';
@@ -54,14 +55,20 @@
 </head>
 <body>
 
-<?php require_once TEMPLATE.'nav.php'; ?>
+<?php 
+    require_once TEMPLATE.'nav.php'; 
+
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "mpayment"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+?>
 
 
 
 
 <?php
         if (!isset($_GET['Id'])){
-            echo "Enlace no válido.";
+            echo Trd(1);
             die();
         }
 
@@ -76,11 +83,11 @@
         if ($cotizacion) {
             // Verificar si la fecha actual es mayor a la de expiración
             if ($ahora > $cotizacion['ExpDate']) {
-                echo "Lo sentimos, esta cotización ha caducado el " . $cotizacion['ExpDate']." $ahora";
+                echo Trd(2)." " . $cotizacion['ExpDate']." $ahora";
                 die();
             }
         } else {
-            echo "Enlace no válido.";
+            echo Trd(1);
             die();
         }
 
@@ -130,7 +137,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card card-payment p-4">
-                <h4 class="mb-4 fw-bold text-center">Checkout</h4>
+                <h4 class="mb-4 fw-bold text-center"><?= Trd(3) ?></h4>
                 
                 <form id="payment-form" action="#" method="POST">
                     <input type="hidden" name="token_id" id="token_id">
@@ -138,7 +145,7 @@
                     <input type="hidden" name="amount" id="monto-final" value="<?php echo $lead['DepositAmount']?>">
 
                     <div class="mb-4">                    
-                        <h6 class="fw-bold mb-3">Contrato</h6>
+                        <h6 class="fw-bold mb-3"><?= Trd(4) ?></h6>
                         
                         <div class="row g-3 align-items-center bg-light p-3 rounded border">
                             <div class="col-5 col-sm-4">
@@ -151,28 +158,28 @@
                             </div>
 
                             <div class="col-7 col-sm-8">
-                                <p class="mb-1 fw-bold text-truncate" id="pdf-name">Contrato de Servicios</p>
+                                <p class="mb-1 fw-bold text-truncate" id="pdf-name"><?= Trd(5) ?></p>
                                 <p class="mb-2 text-muted small">
-                                    <i class="bi bi-file-earmark-pdf"></i> Documento legal listo para revisión.
+                                    <i class="bi bi-file-earmark-pdf"></i> <?= Trd(6) ?>
                                 </p>
                                 <a href="<?php echo $token;?>.pdf" class="btn btn-outline-primary btn-sm" download>
-                                    <i class="bi bi-download"></i> Descargar PDF
+                                    <i class="bi bi-download"></i><?= Trd(7) ?>
                                 </a>
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <h6 class="fw-bold mb-3">Información del Cliente</h6>
+                        <h6 class="fw-bold mb-3"><?= Trd(8) ?></h6>
                         <div class="row g-2">
                             <div class="col-6">
-                                <input type="text" class="form-control" name="name" placeholder="Nombre" value="<?php echo $Nom;?>" required>
+                                <input type="text" class="form-control" name="name" placeholder="<?= Trd(9) ?>" value="<?php echo $Nom;?>" required>
                             </div>
                             <div class="col-6">
-                                <input type="text" class="form-control" name="last_name" placeholder="Apellidos" value="<?php echo $Ape;?>" required>
+                                <input type="text" class="form-control" name="last_name" placeholder="<?= Trd(10) ?>" value="<?php echo $Ape;?>" required>
                             </div>
                             <div class="col-12">
-                                <input type="email" class="form-control" name="email" placeholder="correo@ejemplo.com" value="<?php echo $Correo;?>" required>
+                                <input type="email" class="form-control" name="email" placeholder="<?= Trd(11) ?>" value="<?php echo $Correo;?>" required>
                             </div>
                         </div>
                     </div>
@@ -180,28 +187,28 @@
 
                     <div class="mb-4">
                         <?php if ($PayPlatform == 'OPAY'){?>
-                        <h6 class="fw-bold mb-3">Datos de Tarjeta</h6>
+                        <h6 class="fw-bold mb-3"><?= Trd(12) ?></h6>
                         <div class="mb-2">
-                            <input type="text" class="form-control" placeholder="Nombre en la tarjeta" data-openpay-card="holder_name">
+                            <input type="text" class="form-control" placeholder="<?= Trd(13) ?>" data-openpay-card="holder_name">
                         </div>
                         <div class="mb-2">
-                            <input type="text" class="form-control only-numbers" placeholder="Número de tarjeta" data-openpay-card="card_number" maxlength="16">
+                            <input type="text" class="form-control only-numbers" placeholder="<?= Trd(14) ?>" data-openpay-card="card_number" maxlength="16">
                         </div>
                         <div class="row g-2">
                             <div class="col-4">
-                                <input type="text" class="form-control only-numbers" placeholder="Mes (MM)" data-openpay-card="expiration_month" maxlength="2">
+                                <input type="text" class="form-control only-numbers" placeholder="<?= Trd(15) ?> (MM)" data-openpay-card="expiration_month" maxlength="2">
                             </div>
                             <div class="col-4">
-                                <input type="text" class="form-control only-numbers" placeholder="Año (AA)" data-openpay-card="expiration_year" maxlength="2">
+                                <input type="text" class="form-control only-numbers" placeholder="<?= Trd(16) ?> (AA)" data-openpay-card="expiration_year" maxlength="2">
                             </div>
                             <div class="col-4">
-                                <input type="text" class="form-control only-numbers" placeholder="CVV" data-openpay-card="cvv2" maxlength="4">
+                                <input type="text" class="form-control only-numbers" placeholder="<?= Trd(17) ?>" data-openpay-card="cvv2" maxlength="4">
                             </div>
                         </div>
                         <?php }
                         else{
                         ?>
-                        <h6 class="fw-bold mb-3">Datos de Tarjeta</h6>
+                        <h6 class="fw-bold mb-3"><?= Trd(18) ?></h6>
                             <div id="card-container" class="mb-3"></div>
                         <?php
                         }
@@ -209,12 +216,12 @@
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mb-2 opacity-75">
-                        <span class="text-muted">Monto Total:</span>
+                        <span class="text-muted"><?= Trd(19) ?></span>
                         <span class="fw-bold">$<?php echo number_format($lead['Total'], 2, '.', ',') ;?></span>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-muted">Saldo pendiente (después del pago):</span>
+                        <span class="text-muted"><?= Trd(20) ?></span>
                         <span class="fw-bold">$<?php echo number_format($lead['Balance'], 2, '.', ',') ;?></span>
                     </div>
 
@@ -223,8 +230,8 @@
                     <div class="p-3 bg-light border rounded">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <span class="fw-bold d-block text-primary">Monto a pagar hoy</span>
-                                <small class="text-muted">Por concepto de anticipo</small>
+                                <span class="fw-bold d-block text-primary"><?= Trd(21) ?></span>
+                                <small class="text-muted"><?= Trd(22) ?></small>
                             </div>
                             <h2 class="fw-bold mb-0 text-primary" id="display-pago-hoy">$<?php echo number_format($lead['DepositAmount'], 2, '.', ',') ;?></h2>
                         </div>
@@ -234,11 +241,11 @@
                     </div>
 
                     <?php if ($PayPlatform == 'OPAY'){?>
-                        <button class="btn btn-pay w-100" id="pay-button">Confirmar Pago</button>
+                        <button class="btn btn-pay w-100" id="pay-button"><?= Trd(23) ?></button>
                     <?php }
                         else{
                     ?>
-                        <button id="card-button" type="button" class="btn btn-primary w-100 py-2">Confirmar Pago</button>
+                        <button id="card-button" type="button" class="btn btn-primary w-100 py-2"><?= Trd(23) ?></button>
                     <?php
                     }
                     ?>
@@ -290,7 +297,7 @@
                 
                 // 1. Referencia al botón para feedback visual
                 var $btn = $(this);
-                $btn.prop("disabled", true).text("Procesando...");
+                $btn.prop("disabled", true).text("<?= Trd(24) ?>");
 
                 // 2. Validación manual de campos requeridos (Nombre, Email, etc.)
                 let valid = true;
@@ -304,8 +311,8 @@
                 });
 
                 if (!valid) {
-                    alert("Por favor completa los datos del cliente marcados como obligatorios.");
-                    $btn.prop("disabled", false).text("Confirmar Pago");
+                    alert("<?= Trd(25) ?>");
+                    $btn.prop("disabled", false).text("<?= Trd(26) ?>");
                     return;
                 }
                 const statusDiv = document.getElementById('payment-status-container');
@@ -331,7 +338,8 @@
                         contentType: "application/json", // IMPORTANTE: Indica que envías JSON
                         headers: {
                             'Authorization': 'Bearer ' + token,
-                            'X-ID-CLIENT': '<?= ID_CLIENT ?>'
+                            'X-ID-CLIENT': '<?= ID_CLIENT ?>',
+                            'LNG':'<?= $_SESSION['Idioma'] ?>'
                         },
                         success: function(respuestaBackend) {
                             if(respuestaBackend.status === 'success') {
@@ -351,10 +359,10 @@
                             statusDiv.innerHTML = `
                                 <div class="alert alert-danger d-flex align-items-center mt-3">
                                     <span class="me-2">❌</span>
-                                    <div>Error en el cobro:  ${errorMsg}</div>
+                                    <div><?= Trd(27) ?>:  ${errorMsg}</div>
                                 </div>`;                               
 
-                            $btn.prop("disabled", false).text("Confirmar Pago");
+                            $btn.prop("disabled", false).text("<?= Trd(26) ?>");
                         }
                     });
 
@@ -366,10 +374,10 @@
                     statusDiv.innerHTML = `
                         <div class="alert alert-danger d-flex align-items-center mt-3">
                             <span class="me-2">❌</span>
-                            <div>Error con la tarjeta:  ${desc}</div>
+                            <div><?= Trd(28) ?>:  ${desc}</div>
                         </div>`;                    
 
-                    $btn.prop("disabled", false).text("Confirmar Pago");
+                    $btn.prop("disabled", false).text("<?= Trd(26) ?>");
                 });
             });
 
@@ -414,7 +422,7 @@
             payButton.disabled = true;
             payButton.innerHTML = `
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Procesando pago...
+                <?= Trd(29) ?>
             `;
             
             statusDiv.innerHTML = ""; // Limpiar mensajes previos
@@ -432,7 +440,8 @@
                         contentType: "application/json", // IMPORTANTE: Indica que envías JSON
                         headers: {
                             'Authorization': 'Bearer ' + token,
-                            'X-ID-CLIENT': '<?= ID_CLIENT ?>'
+                            'X-ID-CLIENT': '<?= ID_CLIENT ?>',
+                            'LNG':'<?= $_SESSION['Idioma'] ?>'
                         },                      
                         success: function(respuestaBackend) {
                             if(respuestaBackend.status === 'success') {
@@ -478,7 +487,7 @@
 <?php require_once TEMPLATE.'scripts.php'; ?>
 <?php require_once 'scripts.php'; ?>
 <script src="<?php echo TEMPLATE;?>js/idx-template.js"></script>
-<script src="js/general.js"></script>
+<script src="js/general.php"></script>
 <script>
     $(document).ready(function() {
     const url = '<?= $token ?>.pdf'; // Ruta de tu PDF

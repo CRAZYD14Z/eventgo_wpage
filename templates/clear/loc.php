@@ -1,9 +1,13 @@
-
+<?php 
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "loc"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+?> 
     <section class="mb-5 py-5 bg-white rounded-4 shadow-sm">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-5 px-4">
-                    <h2 class="fw-bold mb-4">Nuestra Ubicación</h2>
+                    <h2 class="fw-bold mb-4"><?= Trd(1) ?></h2>
                     <p class="text-muted"><?php echo COBERTURA?></p>
                     <ul class="list-unstyled mt-3">
                         <li class="mb-2"><i class="fas fa-map-marker-alt text-primary me-2"></i> <?php echo DIRECCION1?></li>

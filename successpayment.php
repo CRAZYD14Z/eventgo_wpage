@@ -1,4 +1,6 @@
 <?php 
+    ob_start();
+    session_start();
     require 'vendor/autoload.php';
     require_once 'config.php';
     require_once 'functions.php';
@@ -27,14 +29,20 @@
 </head>
 <body>
 
-<?php require_once TEMPLATE.'nav.php'; ?>
+<?php 
+    require_once TEMPLATE.'nav.php'; 
+    
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "spayment"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);    
+?>
 
 
 
 
 <?php
         if (!isset($_GET['Id'])){
-            echo "Enlace no válido.";
+            echo Trd(1);
             die();
         }
 
@@ -50,11 +58,11 @@
         if ($cotizacion) {
             // Verificar si la fecha actual es mayor a la de expiración
             if ($ahora > $cotizacion['ExpDate']) {
-                echo "Lo sentimos, esta cotización ha caducado el " . $cotizacion['ExpDate']." $ahora";
+                echo Trd(2)." " . $cotizacion['ExpDate']." $ahora";
                 die();
             }
         } else {
-            echo "Enlace no válido.";
+            echo Trd(1);
             die();
         }
 
@@ -111,22 +119,22 @@
                 <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
             </div>
             
-            <h1 class="fw-bold text-dark">¡Pago Recibido con Éxito!</h1>
-            <p class="lead text-muted mb-5">Tu reservación ha sido confirmada. Hemos enviado el comprobante a tu correo electrónico.</p>
+            <h1 class="fw-bold text-dark"><?= Trd(3) ?></h1>
+            <p class="lead text-muted mb-5"><?= Trd(4) ?></p>
 
             <div class="card border-0 shadow-sm bg-light mb-4">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between mb-3">
-                        <span class="text-muted">Monto Pagado (Anticipo):</span>
+                        <span class="text-muted"><?= Trd(5) ?></span>
                         <span class="fw-bold text-success">+$<?php echo number_format($lead['SubTotal'] + $lead['TaxAmount'] + $lead['Tip'] - $lead['Balance'], 2, '.', ',') ;?></span>
                     </div>
                     <div class="d-flex justify-content-between mb-3">
-                        <span class="text-muted">Total del Servicio:</span>
+                        <span class="text-muted"><?= Trd(6) ?></span>
                         <span class="fw-medium">$<?php echo number_format($lead['SubTotal'] + $lead['TaxAmount'] + $lead['Tip'] , 2, '.', ',') ;?></span>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold text-dark">Saldo Pendiente:</span>
+                        <span class="fw-bold text-dark"><?= Trd(7) ?></span>
                         <h4 class="fw-bold mb-0 text-primary">$<?php echo number_format($lead['Balance'], 2, '.', ',') ;?></h4>
                     </div>
                     <?php 
@@ -140,13 +148,13 @@
 
                     <hr>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold text-dark">Nuevo saldo de la tarjeta de regalo:</span>
+                        <span class="fw-bold text-dark"><?= Trd(8) ?></span>
                         <h4 class="fw-bold mb-0 text-primary">$<?php echo number_format($SaldoGC, 2, '.', ',') ;?></h4>
                     </div>                    
 
                     <?php }?>
                     <small class="d-block text-center mt-3 text-muted">
-                        * El saldo restante se liquidará el día del evento.
+                        * <?= Trd(9) ?>
                     </small>
                 </div>
             </div>
@@ -156,13 +164,13 @@
                 <a href="<?php echo $pdfDataUri; ?>" 
                 download="<?php echo $pdfNombre; ?>" 
                 class="btn btn-primary btn-lg px-4 gap-3">
-                Descargar PDF
+                <?= Trd(10) ?>
                 </a>            
 
-                <a href="<?php echo URL_BASE;?>" class="btn btn-outline-secondary btn-lg px-4">Volver al Inicio</a>
+                <a href="<?php echo URL_BASE;?>" class="btn btn-outline-secondary btn-lg px-4"><?= Trd(11) ?></a>
             </div>
             
-            <p class="mt-5 text-muted small">ID de Transacción: # <?php echo $TId;?></p>
+            <p class="mt-5 text-muted small"><?= Trd(12) ?>: # <?php echo $TId;?></p>
         </div>            
         </div>
     </div>
@@ -175,12 +183,12 @@
 <?php require_once TEMPLATE.'scripts.php'; ?>
 <?php require_once 'scripts.php'; ?>
 <script src="<?php echo TEMPLATE;?>js/idx-template.js"></script>
-<script src="js/general.js"></script>
+<script src="js/general.php"></script>
 <script>
     window.history.pushState(null, "", window.location.href);
     window.onpopstate = function() {
         window.history.pushState(null, "", window.location.href);
-        alert("El pago ya fue procesado. No puedes volver atrás.");
+        alert("<?= Trd(13) ?>");
     };
 </script>
 </body>

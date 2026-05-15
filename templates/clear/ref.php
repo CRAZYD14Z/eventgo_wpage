@@ -1,5 +1,10 @@
+<?php 
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "ref"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+?> 
     <section class="mb-5">
-        <h2 class="section-title">Lo que dicen nuestros clientes</h2>
+        <h2 class="section-title"><?= Trd(1) ?></h2>
         <div class="swiper swiperReviews">
             <div class="swiper-wrapper">
 

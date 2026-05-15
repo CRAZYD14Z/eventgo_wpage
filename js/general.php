@@ -1,3 +1,14 @@
+<?php 
+    ob_start();
+    session_start();
+    require '../vendor/autoload.php';
+    require_once '../config.php';
+    require_once '../functions.php';
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "general"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+?> 
+
 // Lógica simple para el contador del carrito
 let itemCount = 0;
 const cartCountElement = document.getElementById('cartCount');
@@ -41,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const fechas = fp.selectedDates;
         
         if (fechas.length < 1) {
-            alert("Por favor selecciona dos fechas en el calendario.");
+            lanzarAlerta("<?= Trd(1)?>",'warning');
             return;
         }
 /*
@@ -120,7 +131,7 @@ $.ajax({
     },
     error: function(xhr, status, error) {
         console.error('Error:', error);
-        mostrarError('Error al revalidar el carrito');
+        mostrarError('<?= Trd(2)?>');
     }
 });    
 
@@ -331,7 +342,7 @@ function validar_cupon(){
         });    
     }
     else{
-        lanzarAlerta("Es necesario ingresar un código", 'warning');
+        lanzarAlerta("<?= Trd(3)?>", 'warning');
     }
 }
 
@@ -534,10 +545,10 @@ function renderizarCarrito() {
     let Descuento = 0;
     
     // Limpiar contenedor pero mantener el label
-    $contenedor.html('<label class="small fw-bold text-muted text-uppercase d-block mb-3" style="font-size: 0.65rem;">Artículos en el carrito</label>');
+    $contenedor.html('<label class="small fw-bold text-muted text-uppercase d-block mb-3" style="font-size: 0.65rem;"><?= Trd(4)?></label>');
 
     if (carrito.length === 0) {
-        $contenedor.append('<p class="text-center text-muted my-4">El carrito está vacío</p>');
+        $contenedor.append('<p class="text-center text-muted my-4"><?= Trd(5)?></p>');
     }
 
     carrito.forEach(item => {
@@ -547,7 +558,7 @@ function renderizarCarrito() {
         if (item.adicionales && item.adicionales.length > 0) {
             // Contenedor con fondo sutil para agrupar los extras del producto
             htmlListaExtras = '<div class="mt-2 border-top pt-2 bg-light rounded-2 p-2 shadow-sm">';
-            htmlListaExtras += '<p class="fw-bold mb-2 text-muted" style="font-size: 0.65rem; letter-spacing: 0.5px;"><i class="fa-solid fa-plus-circle me-1 text-success"></i> COMPLEMENTOS SELECCIONADOS</p>';
+            htmlListaExtras += '<p class="fw-bold mb-2 text-muted" style="font-size: 0.65rem; letter-spacing: 0.5px;"><i class="fa-solid fa-plus-circle me-1 text-success"></i> <?= Trd(6)?></p>';
 
             item.adicionales.forEach(extra => {
                 // Si no tienes imagen para el extra, puedes usar un placeholder o un icono
@@ -567,7 +578,7 @@ function renderizarCarrito() {
                         
                         <button type="button" class="btn btn-link text-danger p-0 border-0 ms-2" 
                                 onclick="eliminarAdicionalDeItem(${item.id}, '${extra.id}')"
-                                title="Quitar complemento">
+                                title="<?= Trd(7)?>">
                             <i class="fa-solid fa-circle-xmark fs-6"></i>
                         </button>
                     </div>`;
@@ -613,7 +624,7 @@ function renderizarCarrito() {
 
         // Definimos el overlay solo si no hay existencia
         const overlayNoDisponible = item.existencia <= 0 
-            ? `<div class="not-available-overlay">NO DISPONIBLE</div>` 
+            ? `<div class="not-available-overlay"><?= Trd(8)?></div>` 
             : '';
 
         // Aplicamos un filtro de escala de grises a la imagen si no hay stock
@@ -636,7 +647,7 @@ function renderizarCarrito() {
                                         <h6 class="mb-0 fw-bold small">${item.nombre}</h6>
                                     </a>
                                     <p class="text-muted mb-2 small" style="font-size: 0.7rem;">
-                                        ${item.existencia <= 0 ? '<span class="text-danger fw-bold">Agotado</span>' : 'Incluye insumos'}
+                                        ${item.existencia <= 0 ? '<span class="text-danger fw-bold"><?= Trd(9)?></span>' : '<?= Trd(10)?>'}
                                     </p>
                                 </div>                               
                                 <button type="button" class="btn btn-link text-danger p-0 border-0" onclick="eliminarDelCarrito(${item.id})">
@@ -661,9 +672,9 @@ function renderizarCarrito() {
     });
 
     // Actualizar Totales en el Footer
-    $('#Articulos').html(`Subtotal (${totales.cantidadTotal} artículos)`);
+    $('#Articulos').html(`<?= Trd(11)?> (${totales.cantidadTotal} <?= Trd(12)?>)`);
     cartCountElement.innerText = totales.cantidadTotal;
-    $('#SubTotal').html(`$${formatCurrency(totales.subtotal)} MXN`);
+    $('#SubTotal').html(`$${formatCurrency(totales.subtotal)} ${CURRENCY_}`);
 
     
     const data = obtenerDatosRaw();
@@ -674,7 +685,7 @@ function renderizarCarrito() {
 
         if (data.cupon.code){
             if (data.cupon.code != ""){
-                $('#EtiquetaCupon').html(` Descuento ( ${data.cupon.code} )`);
+                $('#EtiquetaCupon').html(`  <?= Trd(18)?> ( ${data.cupon.code} )`);
                 if (data.cupon.type == 'percentage'){
                     Descuento = totales.total *  (data.cupon.val / 100);
                 }
@@ -684,15 +695,15 @@ function renderizarCarrito() {
             }
         }
         else{
-            $('#EtiquetaCupon').html(` Descuento ( No Aplicado )`);
+            $('#EtiquetaCupon').html(` <?= Trd(13)?>`);
         }
-        $('#Descuento').html(`$${formatCurrency(Descuento)} MXN`);
+        $('#Descuento').html(`$${formatCurrency(Descuento)} ${CURRENCY_}`);
 
         if (Descuento < totales.total)
             totales.total = totales.total - Descuento;
     }
 
-    $('.modal-footer .fs-5 .text-primary').html(`$${formatCurrency(totales.total)} MXN`);
+    $('.modal-footer .fs-5 .text-primary').html(`$${formatCurrency(totales.total)} ${CURRENCY_}`);
 }
 
 function setearComponentesCabecera() {
@@ -819,7 +830,7 @@ $('#btnConfirmarFecha').on('click', function() {
             $('#resumenFecha').removeClass('d-none').hide().fadeIn();
         });
     } else {
-        alert("Selecciona un rango de fechas");
+        lanzarAlerta(" <?= Trd(14)?>",'warning');
     }
 });
 
@@ -880,13 +891,13 @@ function pintarLogCarrito() {
 function validarRangoFecha() {
     const input = document.getElementById("textoFechaRango");
     if (!input){
-        mostrarPopup("Por favor selecciona una fecha para tu evento.");
+        mostrarPopup("<?= Trd(15)?>");
         return false;        
     }
 
     const valor = input.innerText.trim();
     if (!valor || valor.includes("--") || valor === "") {
-        mostrarPopup("Por favor, selecciona una fecha para tu evento.");
+        mostrarPopup("<?= Trd(16)?>");
         $('#btnConfirmar').hide();
         
         return false;
@@ -903,12 +914,12 @@ function validarRangoFecha() {
 
     // 3. Validar si está en el pasado
     if (fechaFin < hoy) {
-        mostrarPopup("El periodo seleccionado ya ha pasado. Por favor, elija uno vigente.");
+        mostrarPopup("<?= Trd(17)?>");
         $('#btnConfirmar').hide();
         return false;
     }
 
-    console.log("Fecha válida");
+    //console.log("Fecha válida");
     $('#btnConfirmar').show();
     return true;
 }

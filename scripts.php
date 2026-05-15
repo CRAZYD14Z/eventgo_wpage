@@ -3,4 +3,5 @@
     const url_api ="<?php echo URL_API;?>"
     const url_images ="<?php echo URL_IMAGES;?>"
     const id_client ="<?= ID_CLIENT ?>" 
+    const CURRENCY_ ="<?= $account['Currency'] ?>" 
 </script>

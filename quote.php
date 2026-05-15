@@ -1,4 +1,6 @@
 <?php 
+    ob_start();
+    session_start();
     require 'vendor/autoload.php';
     require_once 'config.php';
     require_once 'functions.php';
@@ -66,14 +68,20 @@
     </style>
 </head>
 <body>
-<?php require_once TEMPLATE.'nav.php'; ?>
+<?php 
+    require_once TEMPLATE.'nav.php'; 
+
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "quote"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);    
+    ?>
 <div class="container py-5">
 
 
 
 <?php
     if (!isset($_GET['Id'])){
-        echo "Enlace no válido.";
+        echo Trd(1);
         die();
     }
 
@@ -88,7 +96,7 @@
     }    
 
     if ($APay != 20 AND $APay != 50 AND $APay != 100){
-        echo "Anticipo  $APay no válido.";
+        echo Trd(2)."  $APay ".Trd(3);
         die();        
     }
 
@@ -108,16 +116,16 @@
     if ($cotizacion) {
         // Verificar si la fecha actual es mayor a la de expiración
         if ($ahora > $cotizacion['ExpDate']) {
-            echo "Lo sentimos, esta cotización ha caducado el " . $cotizacion['ExpDate']." $ahora";
+            echo Trd(4)." " . $cotizacion['ExpDate']." $ahora";
             die();
         }
     } else {
-        echo "Enlace no válido.";
+        echo Trd(1);
         die();
     }
     
     if ($cotizacion['Contrato'] !=""){
-            echo "El documento ya cuenta con contrato firmado.";
+            echo Trd(5);
             die();        
     }
 
@@ -150,7 +158,7 @@
     ?>
 
 <div id="scroll-indicator">
-    <span>⬇ Deslice hacia abajo para acetar</span>
+    <span>⬇ <?= Trd(6) ?> ⬇</span>
 </div>
 
 <div id="main-container" class="container-fluid">
@@ -158,11 +166,11 @@
         <div class="col-lg-8">
             
             <div class="contract-content">
-                <h1 class="text-center mb-5">Cotización</h1>
+                <h1 class="text-center mb-5"><?= Trd(7) ?></h1>
                 
                 <div id="loader-container" class="loader-wrapper">
                     <div class="loader"></div>
-                    <p>Generando cotización...</p>
+                    <p><?= Trd(8) ?></p>
                 </div>
 
                 <div id="Quote" style="display: none;">
@@ -186,50 +194,50 @@
 
 <div id="modal-confirmacion-tip" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); font-family: 'Segoe UI', Arial, sans-serif;">
     <div style="background-color: #fff; margin: 15% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;">Confirmar Propina</div>
+        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;"><?= Trd(9) ?></div>
         <p style="font-size: 14px; color: #555; margin-bottom: 25px;">
-            ¿Deseas agregar <span id="text-monto-confirmar" style="font-weight: bold; color: #27ae60;">$0.00</span> como propina para el equipo?
+            ¿<?= Trd(10) ?> <span id="text-monto-confirmar" style="font-weight: bold; color: #27ae60;">$0.00</span> <?= Trd(11) ?>?
         </p>
         <div style="display: flex; justify-content: space-around;">
-            <button id="btn-cancelar-tip" style="padding: 10px 20px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; color: #666;">Cancelar</button>
-            <button id="btn-aceptar-tip" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;">Sí, agregar</button>
+            <button id="btn-cancelar-tip" style="padding: 10px 20px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; color: #666;"><?= Trd(12) ?></button>
+            <button id="btn-aceptar-tip" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;"><?= Trd(13) ?></button>
         </div>
     </div>
 </div>
 
 <div id="modal-confirmacion-PQE" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); font-family: 'Segoe UI', Arial, sans-serif;">
     <div style="background-color: #fff; margin: 15% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;">Anticipo no permitido</div>
+        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;"><?= Trd(14) ?></div>
         <p style="font-size: 14px; color: #555; margin-bottom: 25px;">
-            El anticipo no puede ser menor de <span style="font-weight: bold; color: #27ae60;">$<?=  $account['DepositAmount'] ?></span> 
+            <?= Trd(15) ?> <span style="font-weight: bold; color: #27ae60;">$<?=  $account['DepositAmount'] ?></span> 
         </p>
         <div style="display: flex; justify-content: space-around;">
-            <button id="btn-aceptar-pqe" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;">Entiendo</button>
+            <button id="btn-aceptar-pqe" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;"><?= Trd(16) ?></button>
         </div>
     </div>
 </div>
 
 <div id="modal-confirmacion-PQEE" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); font-family: 'Segoe UI', Arial, sans-serif;">
     <div style="background-color: #fff; margin: 15% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;">Anticipo no permitido</div>
+        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;"><?= Trd(14) ?></div>
         <p style="font-size: 14px; color: #555; margin-bottom: 25px;">
-            El anticipo no puede ser mayor que el total de <span style="font-weight: bold; color: #27ae60;">$<?=  $lead['Total'] ?></span> 
+            <?= Trd(17) ?> <span style="font-weight: bold; color: #27ae60;">$<?=  $lead['Total'] ?></span> 
         </p>
         <div style="display: flex; justify-content: space-around;">
-            <button id="btn-aceptar-pqee" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;">Entiendo</button>
+            <button id="btn-aceptar-pqee" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;"><?= Trd(16) ?></button>
         </div>
     </div>
 </div>
 
 <div id="modal-confirmacion-PQ" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); font-family: 'Segoe UI', Arial, sans-serif;">
     <div style="background-color: #fff; margin: 15% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;">Confirmar Anticipo</div>
+        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;"><?= Trd(18) ?></div>
         <p style="font-size: 14px; color: #555; margin-bottom: 25px;">
-            ¿Deseas cambiar el anticipo a <span id="text-monto-confirmarPQ" style="font-weight: bold; color: #27ae60;">$0.00</span> ?
+            ¿<?= Trd(19) ?><span id="text-monto-confirmarPQ" style="font-weight: bold; color: #27ae60;">$0.00</span> ?
         </p>
         <div style="display: flex; justify-content: space-around;">
-            <button id="btn-cancelar-PQ" style="padding: 10px 20px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; color: #666;">Cancelar</button>
-            <button id="btn-aceptar-pq" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;">Sí, cambiar</button>
+            <button id="btn-cancelar-PQ" style="padding: 10px 20px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; color: #666;"><?= Trd(20) ?></button>
+            <button id="btn-aceptar-pq" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;"><?= Trd(21) ?></button>
         </div>
     </div>
 </div>
@@ -237,13 +245,13 @@
 
 <div id="modal-remove-tip" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); font-family: 'Segoe UI', Arial, sans-serif;">
     <div style="background-color: #fff; margin: 15% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;">Remover Propina</div>
+        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;"><?= Trd(22) ?></div>
         <p style="font-size: 14px; color: #555; margin-bottom: 25px;">
-            ¿Deseas retirar la propina para el equipo?
+            ¿<?= Trd(23) ?>?
         </p>
         <div style="display: flex; justify-content: space-around;">
-            <button id="btn-cancelar-remove-tip" style="padding: 10px 20px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; color: #666;">Cancelar</button>
-            <button id="btn-aceptar-remove-tip" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;">Sí, remover</button>
+            <button id="btn-cancelar-remove-tip" style="padding: 10px 20px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; color: #666;"><?= Trd(24) ?></button>
+            <button id="btn-aceptar-remove-tip" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;"><?= Trd(25) ?></button>
         </div>
     </div>
 </div>
@@ -251,13 +259,13 @@
 
 <div id="modal-change-apay" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); font-family: 'Segoe UI', Arial, sans-serif;">
     <div style="background-color: #fff; margin: 15% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;">Cambiar Anticipo</div>
+        <div style="font-size: 18px; font-weight: bold; color: #002d72; margin-bottom: 15px;"><?= Trd(26) ?></div>
         <p style="font-size: 14px; color: #555; margin-bottom: 25px;">
-            ¿Deseas cambiar el anticipo a <span id="text-monto-anticipo" style="font-weight: bold; color: #27ae60;">$0.00</span>?
+            ¿<?= Trd(27) ?> <span id="text-monto-anticipo" style="font-weight: bold; color: #27ae60;">$0.00</span>?
         </p>
         <div style="display: flex; justify-content: space-around;">
-            <button id="btn-cancelar-apay" style="padding: 10px 20px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; color: #666;">Cancelar</button>
-            <button id="btn-aceptar-apay" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;">Sí, cambiar</button>
+            <button id="btn-cancelar-apay" style="padding: 10px 20px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; color: #666;"><?= Trd(28) ?></button>
+            <button id="btn-aceptar-apay" style="padding: 10px 20px; border: none; background: #27ae60; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold;"><?= Trd(29) ?></button>
         </div>
     </div>
 </div>
@@ -612,7 +620,7 @@ const FHFp = FHF.split(' ')
                 const codigo = desc.concepto;
                 const regex = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
                 if (regex.test(codigo)) {
-                    gfcrd = 'Tarjeta de regalo<br>'
+                    gfcrd = '<?= Trd(30) ?><br>'
                 }     
 
                 let filaDescHtml = htmlPlantillaDesc
@@ -676,7 +684,7 @@ const FHFp = FHF.split(' ')
 <?php require_once TEMPLATE.'scripts.php'; ?>
 <?php require_once 'scripts.php'; ?>
 <script src="<?php echo TEMPLATE;?>js/idx-template.js"></script>
-<script src="js/general.js"></script>
+<script src="js/general.php"></script>
 <script>
 </script>
 </body>
