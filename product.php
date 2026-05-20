@@ -1,6 +1,7 @@
 <?php 
     ob_start();
     session_start();
+    require 'vendor/autoload.php';
     require_once 'config.php';
     require_once 'functions.php';
     require_once TEMPLATE.'head.php'; 
@@ -51,7 +52,9 @@
             }
         </style>        
 <?php 
-
+    $api_url = URL_API."Traducciones_web";
+    $datat = json_encode(['program' => "producto"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$datat,'GET'), true);
     foreach ($data['data'] as $producto) {
 
 ?>
@@ -77,7 +80,7 @@
                             }
                         ?>
                     </div>
-                    <p class="text-center small text-muted mt-2 mb-0">Galería de imágenes</p>
+                    <p class="text-center small text-muted mt-2 mb-0"><?= Trd(3) ?></p>
                 </div>
             </div>
         </div>
@@ -104,25 +107,25 @@
                     </div>
 
                     <button class="btn btn-primary flex-grow-1" onclick="add_cart()">
-                        <i class="fas fa-shopping-cart me-2"></i>Agregar
+                        <i class="fas fa-shopping-cart me-2"></i><?= Trd(1) ?>
                     </button>
                 </div>
 
                 <div class="mb-4">
                     <span class="badge rounded-pill bg-light text-dark border">
                         <i class="fas fa-boxes me-1 text-primary"></i> 
-                        Disponibles: <span id="stock-val">0</span>
+                        <?= Trd(2) ?>: <span id="stock-val">0</span>
                     </span>
                 </div>            
 
             <hr>
                 <div class="product-details">                
                     <?php echo $producto['Description']?>
-                    <h5 class="mt-4 fw-bold">Dimensiones</h5>
+                    <h5 class="mt-4 fw-bold"><?= Trd(4) ?></h5>
                     <p><?php echo $producto['ActualSize']?></p>
-                    <h5 class="mt-4 fw-bold">Espacio Requerido</h5>
+                    <h5 class="mt-4 fw-bold"><?= Trd(5) ?></h5>
                     <p><?php echo $producto['SpaceRequired']?></p>
-                    <h5 class="mt-4 fw-bold">Peso</h5>
+                    <h5 class="mt-4 fw-bold"><?= Trd(6) ?></h5>
                     <p><?php echo $producto['Weight']?></p>
                 </div>    
         </div>
@@ -135,35 +138,35 @@
         echo "<h1>Error en la API</h1>";
         echo "Mensaje: " . ($data['message'] ?? 'Error desconocido');
     }
+    $dataRsp = $data;
     ?>
 
     <hr class="my-5">
     <?php 
-    $Title="Accesorios";
+    $Title=Trd(7);
     $SubTitle="Accesorios";
     $SSubTitle="Accesorios";
-        require_once TEMPLATE.'accesories.php'; ?>
+    require_once TEMPLATE.'accesories.php'; ?>
     <hr class="my-5">
     <?php 
     
-    $Title="Podrias estar interesado en:";
+    $Title=Trd(8);
     $SubTitle="Accesorios";
     $SSubTitle="Accesorios";    
     require_once TEMPLATE.'interested.php'; ?>
-<?php
-    //print_r($data['Resultadosp'])
-?>
+
 </div>
 
 <?php require_once TEMPLATE.'social.php'; ?>
-
 <?php require_once TEMPLATE.'cart.php'; ?>
-
 <?php require_once TEMPLATE.'scripts.php'; ?>
 <?php require_once 'scripts.php'; ?>
 
 <script src="<?php echo URL_BASE."/".TEMPLATE;?>js/idx-template.js"></script>
 <script src="<?php echo URL_BASE."/";?>js/general.php"></script>
+<?php
+    $data = $dataRsp;
+?>
 <script>
 
     var MAX_STOCK = <?php echo $data['Resultadosp'][0]['Quantity']?>; 

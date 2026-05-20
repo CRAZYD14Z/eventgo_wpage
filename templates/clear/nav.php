@@ -21,6 +21,7 @@
         </button>
         <div class="collapse navbar-collapse" id="menuPrincipal">
             <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="<?php echo URL_BASE?>/"><i class="fa-solid fa-house"></i></a></li>                    
                 <li class="nav-item"><a class="nav-link" href="<?php echo URL_BASE?>/categories"><?= Trd(1) ?></a></li>
                 <li class="nav-item"><a class="nav-link" href="<?php echo URL_BASE?>/events"><?= Trd(2) ?></a></li>
                 <?php if ( $account['Couppon'] == 1){?>

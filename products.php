@@ -76,7 +76,7 @@
         }
         
         productos.forEach(product => {
-            const url = '<?php echo URL_BASE; ?>/product/' + product.ProductName.replace(/ /g, '-')+'?Idp='+product.Producto+'?SD='+$('#FI').val()+'&ED='+$('#FF').val()+'&SH='+$('#hInicio').val()+'&EH='+$('#hFin').val();
+            const url = '<?php echo URL_BASE; ?>/product/' + product.ProductName.replace(/ /g, '-')+'?Idp='+product.Producto+'&SD='+$('#FI').val()+'&ED='+$('#FF').val()+'&SH='+$('#hInicio').val()+'&EH='+$('#hFin').val();
             const imagenUrl = '<?php echo URL_IMAGES; ?>/products_images/thumbnails/' + product.Image;
             
             const productoHTML = `

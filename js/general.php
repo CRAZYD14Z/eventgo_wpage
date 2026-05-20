@@ -5,8 +5,8 @@
     require_once '../config.php';
     require_once '../functions.php';
     $api_url = URL_API."Traducciones_web";
-    $data = json_encode(['program' => "general"]);
-    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+    $datat = json_encode(['program' => "general"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$datat,'GET'), true);
 ?> 
 
 // Lógica simple para el contador del carrito
@@ -80,69 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 $(document).ready(function() {
-    // 1. Al dar clic en "Seleccionar Fecha"
-    $('#btnConfirmarFecha').on('click', function() {
-        const fechaVal = $('#calendarioRango').val();
-        
-        if (fechaVal !== "") {
-            // Actualizar el texto del resumen
-            $('#textoFechaRango').text(fechaVal);
-            
-            // Animación: Ocultar calendario, mostrar resumen
-            $('#contenedorCalendario').slideUp(400, function() {
-                $('#resumenFecha').removeClass('d-none').hide().fadeIn();
-            });
 
-    //const carrito = obtenerCarrito();
-    //carrito.forEach(item => {
-    //    alert(item.id)
-    //});
-
-    const carrito = obtenerCarrito();
-
-    const datos = {
-    items: carrito.map(item => ({
-        id: item.id,
-        precio: item.precio,
-        cantidad: item.cantidad,
-        existencia: item.existencia
-    })),
-
-    SD: $('#FI').val(),
-    ED: $('#FF').val(),
-    SH: '08:00',
-    EH: '16:00'
-};
-
-$.ajax({
-    url: url_api+'cart_update',
-    type: 'POST',
-    contentType: 'application/json',
-    data: JSON.stringify(datos),
-    headers: {
-        'Authorization': 'Bearer ' + token,
-        'X-ID-CLIENT': id_client
-    },
-    success: function(response) {
-        console.log('Éxito:', response);
-        // Procesar respuesta
-        cart_update(response.data);
-        
-    },
-    error: function(xhr, status, error) {
-        console.error('Error:', error);
-        mostrarError('<?= Trd(2)?>');
-    }
-});    
-
-
-            
-
-        } else {
-            // Opcional: Algún feedback visual si no hay fecha
-            $('#calendarioRango').addClass('is-invalid').focus();
-        }
-    });
 
     // 2. Al dar clic en el icono pequeño (Reabrir)
     $('#btnReabrirCalendario').on('click', function() {
@@ -357,7 +295,7 @@ function guardarCupon(code,type,val) {
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     
-    animarCarritoConMensaje('Cupon ');
+    animarCarritoConMensaje('<?= Trd(21) ?>');
     renderizarCarrito();
     //pintarLogCarrito();
 }
@@ -376,14 +314,14 @@ function agregarAlCarrito(producto,cantidad) {
     }
     guardarCarrito(carrito);
 
-    animarCarritoConMensaje('Producto')
+    animarCarritoConMensaje('<?= Trd(20) ?>')
 
 }
 
 function animarCarritoConMensaje(producto) {
     // Crear elemento de notificación
     const notificacion = document.createElement('div');
-    notificacion.textContent = `✓ ${producto} agregado !!`;
+    notificacion.textContent = `✓ ${producto} !!`;
     notificacion.style.cssText = `
         position: fixed;
         top: 20px;
@@ -454,7 +392,7 @@ function agregarExtraAItem(itemId, itemRl,Name,Price,Image,Url) {
             // GuardarCarrito ya se encarga de actualizar LocalStorage y refrescar la UI
             guardarCarrito(carrito); 
 
-            animarCarritoConMensaje('Producto')            
+            animarCarritoConMensaje('<?= Trd(20) ?>')            
 
         } else {
 
@@ -788,6 +726,8 @@ function setearComponentesCabecera() {
 }
 
 $('#btnConfirmarFecha').on('click', function() {
+    const $btn = $(this); // Guardamos la referencia al botón
+    const $btn2 = $('#btnConfirmar'); // Guardamos la referencia al botón
     const fechaVal = $('#calendarioRango').val();
     const hInicio = $('#hInicio').val();
     const hFin = $('#hFin').val();
@@ -797,11 +737,13 @@ $('#btnConfirmarFecha').on('click', function() {
     
     if (fechaVal !== "") {
         // Guardar en la sesión del navegador
-        guardarCabecera(fechaVal, hInicio, hFin,cOde,tYpe,vAl);
-        
+        guardarCabecera(fechaVal, hInicio, hFin, cOde, tYpe, vAl);      
 
         const calendario = $('#calendarioRango')[0]._flatpickr;
         const fechas = calendario.selectedDates;
+
+        let fechaInicialStr = "";
+        let fechaFinalStr = "";
 
         if (fechas.length === 2) {
             const fechaInicial = fechas[0];
@@ -815,20 +757,88 @@ $('#btnConfirmarFecha').on('click', function() {
                 return `${year}-${month}-${day}`;
             };
             
-            const fechaInicialStr = formatoFecha(fechaInicial);
-            const fechaFinalStr = formatoFecha(fechaFinal);
+            fechaInicialStr = formatoFecha(fechaInicial);
+            fechaFinalStr = formatoFecha(fechaFinal);
             
-            //console.log('Fecha inicial:', fechaInicialStr);
-            //console.log('Fecha final:', fechaFinalStr);
-            $('#FI').val(fechaInicialStr); // Objeto Date
-            $('#FF').val(fechaFinalStr);   // Objeto Date            
+            $('#FI').val(fechaInicialStr); 
+            $('#FF').val(fechaFinalStr);   
         }
 
-        // Efectos visuales
+        // --- DETECTAR PARÁMETROS EN URL Y RECARGAR ---
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (urlParams.has('SD') && urlParams.has('ED')) {
+            // 1. Forzar a que el contenedor se quede visible y detener animaciones
+            // $('#contenedorCalendario').stop().show();
+
+            // 2. Deshabilitar botón y colocar Spinner
+            $btn.prop('disabled', true)
+                .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> <?= Trd(19)?>');
+
+            $btn2.prop('disabled', true)
+                .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> <?= Trd(19)?>');                
+
+            if (fechaInicialStr && fechaFinalStr) {
+                urlParams.set('SD', fechaInicialStr);
+                urlParams.set('ED', fechaFinalStr);
+            }
+            if (hInicio) urlParams.set('SH', hInicio);
+            if (hFin) urlParams.set('EH', hFin);
+
+   const carrito = obtenerCarrito();
+
+    const datos = {
+    items: carrito.map(item => ({
+        id: item.id,
+        precio: item.precio,
+        cantidad: item.cantidad,
+        existencia: item.existencia
+    })),
+
+    SD: $('#FI').val(),
+    ED: $('#FF').val(),
+    SH: '08:00',
+    EH: '16:00'
+};
+
+$.ajax({
+    url: url_api+'cart_update',
+    type: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(datos),
+    headers: {
+        'Authorization': 'Bearer ' + token,
+        'X-ID-CLIENT': id_client
+    },
+    success: function(response) {
+        console.log('Éxito:', response);
+        // Procesar respuesta
+        cart_update(response.data);
+        window.location.search = urlParams.toString();
+    },
+    error: function(xhr, status, error) {
+        console.error('Error:', error);
+        //mostrarError('<?= Trd(2)?>');
+    }
+});    
+
+
+
+            // 3. Delay para que el navegador renderice el spinner antes de la recarga
+            //setTimeout(function() {
+                //window.location.search = urlParams.toString();
+            //}, 150);
+            
+            return; // Importante: detenemos el flujo aquí para que NO ejecute el slideUp de abajo
+        }
+        // ---------------------------------------------
+
+        // Efectos visuales (Solo se ejecutan si NO se recarga la página)
         $('#textoFechaRango').text(fechaVal);
         $('#contenedorCalendario').slideUp(400, function() {
             $('#resumenFecha').removeClass('d-none').hide().fadeIn();
         });
+        
     } else {
         lanzarAlerta(" <?= Trd(14)?>",'warning');
     }
@@ -991,7 +1001,7 @@ function formatCurrency(total) {
         e.preventDefault();
 
         $.ajax({
-            url: 'change_lng.php',
+            url: '<?php echo URL_BASE."/";?>change_lng.php',
             type: 'POST',
             data: { lang: $(this).data('lang') },
             dataType: 'json',

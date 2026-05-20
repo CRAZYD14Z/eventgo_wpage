@@ -70,7 +70,7 @@
 <body>
 <?php 
     require_once TEMPLATE.'nav.php'; 
-
+    $lang = $_SESSION['Idioma'];
     $api_url = URL_API."Traducciones_web";
     $data = json_encode(['program' => "quote"]);
     $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);    

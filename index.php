@@ -9,9 +9,6 @@
     <link rel="stylesheet" href="<?php echo URL_BASE."/";?>css/general.css">
     <link rel="stylesheet" href="<?php echo URL_BASE."/".TEMPLATE;?>css/coupon.css">
     <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
-    <style>
-
-    </style>
 </head>
 <body>
 <?php require_once TEMPLATE.'nav.php'; ?>
