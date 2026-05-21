@@ -64,6 +64,8 @@
             define('DIRECCION2', $account['Ciudad'].", ".$account['Estado']." ".$account['CP']);
             define('PLACE_ID', $account['PlaceID']);
             define('CORREO', $account['Correo']);
+            define('LAT', $account['Lat']);
+            define('LNG', $account['Lng']);
         }
     }
     else{

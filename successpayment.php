@@ -114,7 +114,7 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
-            <div class="card card-payment p-4">
+            <div class="card card-payment p-4  text-center">
             <div class="mb-4">
                 <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
             </div>

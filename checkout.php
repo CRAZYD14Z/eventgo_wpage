@@ -279,9 +279,10 @@ $('#btn-validar').on('click', function() {
                 $('#tel_cliente').val(response.customer.TelefonoCelular);
                 $('#email_cliente').val(response.customer.Correo);
                 $('#dir_cliente').val(response.customer.Direccion);
+                <?php if ($account['Pais'] == 'MX'){?>
                 $('#colonia_cliente').val(response.customer.Direccion2);
+                <?php }?>
                 $('#ciudad_cliente').val(response.customer.Ciudad);
-                $('#colonia_cliente').val();
                 $('#cp_cliente').val(response.customer.CP);
 
                 
@@ -315,7 +316,9 @@ $('#btn-validar').on('click', function() {
 $('#btn_copiar_direccion').on('click', function() {
     $('#dir_evento').val($('#dir_cliente').val())
     $('#ciudad_evento').val($('#ciudad_cliente').val())
+<?php if ($account['Pais'] == 'MX'){?>    
     $('#colonia_evento').val($('#colonia_cliente').val())
+<?php } ?>    
     $('#cp_evento').val($('#cp_cliente').val())
 });
 
@@ -334,14 +337,18 @@ $('#btn_enviar_cotizacion').on('click', function() {
         { selector: '#apellidos', nombre: 'Apellidos' },
         { selector: '#dir_cliente', nombre: 'Dirección Completa' },
         { selector: '#ciudad_cliente', nombre: 'Código Postal' },
-        { selector: '#colonia_cliente', nombre: 'Colonia' },
+        
         { selector: '#cp_cliente', nombre: 'Código Postal' },    
         { selector: '#tel_cliente', nombre: 'Teléfono' },    
         { selector: '#email_cliente', nombre: 'Correo Electrónico' },    
 
+<?php if ($account['Pais'] == 'MX'){?>        
+        { selector: '#colonia_cliente', nombre: 'Colonia' },
+        { selector: '#colonia_evento', nombre: 'Colonia' },
+<?php } ?>
         { selector: '#dir_evento', nombre: 'Dirección Completa' },
         { selector: '#ciudad_evento', nombre: 'Ciudad' },
-        { selector: '#colonia_evento', nombre: 'Colonia' },
+
         { selector: '#cp_evento', nombre: 'Código Postal' },
         { selector: '#superficie', nombre: 'Superficie' },
         { selector: '#tipo_entrega', nombre: 'Tipo de Entrega' }
@@ -432,7 +439,11 @@ if (email !== '') {
         correo: $('#email_cliente').val().trim(),        
         direccion: $('#dir_cliente').val().trim(),
         ciudad: $('#ciudad_cliente').val().trim(),
-        colonia: $('#colonia_cliente').val().trim(),
+        <?php if ($account['Pais'] == 'MX'){?>                
+            colonia: $('#colonia_cliente').val().trim(),
+        <?php }else{?>        
+            colonia: '',
+        <?php }?>        
         cp: $('#cp_cliente').val().trim(),
         estado:''
     };
@@ -441,7 +452,11 @@ if (email !== '') {
     const ubicacion = {
         direccion: $('#dir_evento').val().trim(),
         ciudad: $('#ciudad_evento').val().trim(),
-        colonia: $('#colonia_evento').val().trim(),
+        <?php if ($account['Pais'] == 'MX'){?>                
+            colonia: $('#colonia_evento').val().trim(),
+        <?php }else{?>        
+            colonia: '',
+        <?php }?>              
         cp: $('#cp_evento').val().trim(),
         estado:'',
         referencias: $('#ref_evento').val().trim(),
@@ -484,28 +499,58 @@ if (email !== '') {
             items: datosCarrito.items // Aquí ya van los adicionales anidados
         }
     };
+    const zipos  = {
+        ZIPO: '<?= $account['CP']  ?>',
+        CONO: '<?= $account['Pais']  ?>',
+        ZIPD: $('#cp_evento').val().trim(),
+        COND: '<?= $account['Pais']  ?>'
+    };    
 
-    // 5. Envío mediante POST
     $.ajax({
-        url: '<?php echo URL_API?>process_quote',
+        url: '<?php echo URL_API?>distance',
         type: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify(paqueteFinal),
+        data: JSON.stringify(zipos),
         headers: {
             'Authorization': 'Bearer ' + token,
             'X-ID-CLIENT': '<?= ID_CLIENT ?>',
             'LNG':'<?= $_SESSION['Idioma'] ?>'
-        },        
-        beforeSend: function() {
-            $('#btn_enviar_cotizacion').prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> <?= Trd(19) ?>');
-        },
+        },  
+
         success: function(response) {
-            if (response.status === 'success') {
-                //$('#btn_enviar_cotizacion').prop('disabled', false).text('CONFIRMAR RESERVA');
-                localStorage.removeItem('ds_jumper_cart');
-                window.location.href = 'quote.php?Id=' + response.UUID;
+            if (response.cost && response.cost.success === true) {
+            
+                $.ajax({
+                    url: '<?php echo URL_API?>process_quote',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(paqueteFinal),
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'X-ID-CLIENT': '<?= ID_CLIENT ?>',
+                        'LNG':'<?= $_SESSION['Idioma'] ?>'
+                    },        
+                    beforeSend: function() {
+                        $('#btn_enviar_cotizacion').prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> <?= Trd(19) ?>');
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            //$('#btn_enviar_cotizacion').prop('disabled', false).text('CONFIRMAR RESERVA');
+                            localStorage.removeItem('ds_jumper_cart');
+                            window.location.href = 'quote.php?Id=' + response.UUID;
+                        } else {
+                            alert("Error: " + response.message);
+                            $('#btn_enviar_cotizacion').prop('disabled', false).text('<?= Trd(20) ?>');
+                        }
+                    },
+                    error: function() {
+                        alert("<?= Trd(12) ?>.");
+                        $('#btn_enviar_cotizacion').prop('disabled', false).text('<?= Trd(20) ?>');
+                    }
+                });            
+
             } else {
-                alert("Error: " + response.message);
+                lanzarAlerta('Lo sentimos, el lugar de tu evento está fuera de nuestro rango de entrega.', 'warning');
                 $('#btn_enviar_cotizacion').prop('disabled', false).text('<?= Trd(20) ?>');
             }
         },
@@ -513,7 +558,10 @@ if (email !== '') {
             alert("<?= Trd(12) ?>.");
             $('#btn_enviar_cotizacion').prop('disabled', false).text('<?= Trd(20) ?>');
         }
-    });
+    });        
+
+
+
 });
 
 

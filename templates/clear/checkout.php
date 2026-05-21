@@ -1,10 +1,16 @@
     <div class="row g-5">
         
         <div class="col-lg-7">
-            <h4 class="mb-4 fw-bold"><?= Trd(21) ?></h4>
+            
+            
             
             <div class="card border-0 shadow-sm mb-4 rounded-4">
                 <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center mb-3">
+                        <h4 class="mb-4 fw-bold"><?= Trd(21) ?></h4>
+                    </div>                
+
                     <div class="d-flex align-items-center mb-3">
                         <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
                             <i class="fa-solid fa-user text-primary"></i>
@@ -45,11 +51,13 @@
                         <div class="col-md-6">
                             <label class="form-label small fw-bold"><?= Trd(29) ?></label>
                             <input type="text" id="ciudad_cliente" class="form-control">
-                        </div>                        
+                        </div>
+                        <?php if ($account['Pais'] == 'MX'){?>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold"><?= Trd(30) ?></label>
                             <input type="text" id="colonia_cliente" class="form-control">
                         </div>
+                        <?php }?>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold"><?= Trd(31) ?></label>
                             <input type="text" id="cp_cliente" class="form-control">
@@ -87,11 +95,13 @@
                         <div class="col-md-6">
                             <label class="form-label small fw-bold"><?= Trd(29) ?></label>
                             <input type="text" id="ciudad_evento" class="form-control">
-                        </div>                          
+                        </div>
+                        <?php if ($account['Pais'] == 'MX'){?>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold"><?= Trd(30) ?></label>
                             <input type="text" id="colonia_evento" class="form-control">
                         </div>
+                        <?php }?>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold"><?= Trd(31) ?></label>
                             <input type="text" id="cp_evento" class="form-control">
@@ -232,13 +242,12 @@
                             <button type="button" id="btn_enviar_cotizacion" class="btn btn-primary btn-lg w-100 mt-4 rounded-pill fw-bold shadow">
                                 <?= Trd(52) ?> <i class="fa-solid fa-paper-plane ms-2"></i>
                             </button>
+                            <p class="text-center mt-3 small text-muted"><i class="fa-solid fa-lock me-1"></i> <?= Trd(53) ?></p>
                         </div>
                     </div>
                 </div>
                 
-                <p class="text-center mt-3 small text-muted">
-                    <i class="fa-solid fa-lock me-1"></i> <?= Trd(53) ?>
-                </p>
+                
             </div>
         </div>
     </div>
