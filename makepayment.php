@@ -58,6 +58,17 @@
 <?php 
     require_once TEMPLATE.'nav.php'; 
 
+
+    if ($account['Pais'] == 'USA')
+        $account['Pais'] = 'US';
+    else
+        $account['Pais'] = 'MX';
+
+    $api_url = URL_API."PAYPAL";
+    $data = '';
+    $paypal_account = json_decode(API($jwt,$api_url,$data,'GET'), true);        
+
+
     $api_url = URL_API."Traducciones_web";
     $data = json_encode(['program' => "mpayment"]);
     $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
@@ -138,7 +149,22 @@
         <div class="col-md-8 col-lg-6">
             <div class="card card-payment p-4">
                 <h4 class="mb-4 fw-bold text-center"><?= Trd(3) ?></h4>
-                
+                <?php if ($paypal_account['Active'] ==1):?>
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-2">Selecciona tu método de pago:</h6>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="payment_method" id="method-card" checked autocomplete="off">
+                        <label class="btn btn-outline-primary" for="method-card">
+                            <i class="bi bi-credit-card-2-front me-2"></i>Tarjeta de Crédito/Débito
+                        </label>
+
+                        <input type="radio" class="btn-check" name="payment_method" id="method-paypal" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="method-paypal">
+                            <i class="bi bi-paypal me-2"></i>PayPal / Venmo / Pay Later
+                        </label>
+                    </div>
+                </div>
+                <?php endif;?>
                 <form id="payment-form" action="#" method="POST">
                     <input type="hidden" name="token_id" id="token_id">
                     <input type="hidden" name="token" id="token" value="<?php echo $token ?>">
@@ -146,7 +172,6 @@
 
                     <div class="mb-4">                    
                         <h6 class="fw-bold mb-3"><?= Trd(4) ?></h6>
-                        
                         <div class="row g-3 align-items-center bg-light p-3 rounded border">
                             <div class="col-5 col-sm-4">
                                 <div class="position-relative border bg-white rounded overflow-hidden shadow-sm" style="min-height: 120px;">
@@ -156,7 +181,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-7 col-sm-8">
                                 <p class="mb-1 fw-bold text-truncate" id="pdf-name"><?= Trd(5) ?></p>
                                 <p class="mb-2 text-muted small">
@@ -173,19 +197,18 @@
                         <h6 class="fw-bold mb-3"><?= Trd(8) ?></h6>
                         <div class="row g-2">
                             <div class="col-6">
-                                <input type="text" class="form-control" name="name" placeholder="<?= Trd(9) ?>" value="<?php echo $Nom;?>" required>
+                                <input type="text" class="form-control" name="name" id="client-name" placeholder="<?= Trd(9) ?>" value="<?php echo $Nom;?>" required>
                             </div>
                             <div class="col-6">
-                                <input type="text" class="form-control" name="last_name" placeholder="<?= Trd(10) ?>" value="<?php echo $Ape;?>" required>
+                                <input type="text" class="form-control" name="last_name" id="client-lastname" placeholder="<?= Trd(10) ?>" value="<?php echo $Ape;?>" required>
                             </div>
                             <div class="col-12">
-                                <input type="email" class="form-control" name="email" placeholder="<?= Trd(11) ?>" value="<?php echo $Correo;?>" required>
+                                <input type="email" class="form-control" name="email" id="client-email" placeholder="<?= Trd(11) ?>" value="<?php echo $Correo;?>" required>
                             </div>
                         </div>
                     </div>
 
-
-                    <div class="mb-4">
+                    <div id="traditional-gateway-section" class="mb-4">
                         <?php if ($PayPlatform == 'OPAY'){?>
                         <h6 class="fw-bold mb-3"><?= Trd(12) ?></h6>
                         <div class="mb-2">
@@ -205,21 +228,21 @@
                                 <input type="text" class="form-control only-numbers" placeholder="<?= Trd(17) ?>" data-openpay-card="cvv2" maxlength="4">
                             </div>
                         </div>
-                        <?php }
-                        else{
-                        ?>
+                        <?php } else { ?>
                         <h6 class="fw-bold mb-3"><?= Trd(18) ?></h6>
-                            <div id="card-container" class="mb-3"></div>
-                        <?php
-                        }
-                        ?>
+                        <div id="card-container" class="mb-3"></div>
+                        <?php } ?>
+                    </div>
+
+                    <div id="paypal-gateway-section" class="mb-4 d-none">
+                        <h6 class="fw-bold mb-3">Pagar de forma segura con PayPal:</h6>
+                        <div id="paypal-button-container"></div>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mb-2 opacity-75">
                         <span class="text-muted"><?= Trd(19) ?></span>
                         <span class="fw-bold">$<?php echo number_format($lead['Total'], 2, '.', ',') ;?></span>
                     </div>
-
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <span class="text-muted"><?= Trd(20) ?></span>
                         <span class="fw-bold">$<?php echo number_format($lead['Balance'], 2, '.', ',') ;?></span>
@@ -236,38 +259,32 @@
                             <h2 class="fw-bold mb-0 text-primary" id="display-pago-hoy">$<?php echo number_format($lead['DepositAmount'], 2, '.', ',') ;?></h2>
                         </div>
                     </div>
-                    <div id="payment-status-container" class="mt-3 text-center">
+                    
+                    <div id="payment-status-container" class="mt-3 text-center"></div>
 
+                    <div id="traditional-buttons-section" class="mt-3">
+                        <?php if ($PayPlatform == 'OPAY'){?>
+                            <button class="btn btn-pay w-100" id="pay-button"><?= Trd(23) ?></button>
+                        <?php } else { ?>
+                            <button id="card-button" type="button" class="btn btn-primary w-100 py-2"><?= Trd(23) ?></button>
+                        <?php } ?>
+                        
+                        <div class="text-center mt-3">
+                            <?php if ($PayPlatform == 'OPAY'){?>
+                                <img src="https://www.openpay.mx/_ipx/_/img/header/openpay-color.svg" alt="Openpay" style="height: 25px; opacity: 0.6;">
+                            <?php } else { ?>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Square%2C_Inc._logo.svg/1280px-Square%2C_Inc._logo.svg.png" alt="Square" style="height: 25px; opacity: 0.6;">
+                            <?php } ?>                     
+                        </div>
                     </div>
 
-                    <?php if ($PayPlatform == 'OPAY'){?>
-                        <button class="btn btn-pay w-100" id="pay-button"><?= Trd(23) ?></button>
-                    <?php }
-                        else{
-                    ?>
-                        <button id="card-button" type="button" class="btn btn-primary w-100 py-2"><?= Trd(23) ?></button>
-                    <?php
-                    }
-                    ?>
-                    <div class="text-center mt-3">
-
-                    <?php if ($PayPlatform == 'OPAY'){?>
-                          <img src="https://www.openpay.mx/_ipx/_/img/header/openpay-color.svg" alt="Openpay" style="height: 25px; opacity: 0.6;">
-                    <?php }
-                        else{
-                    ?>
-                          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Square%2C_Inc._logo.svg/1280px-Square%2C_Inc._logo.svg.png" alt="Square" style="height: 25px; opacity: 0.6;">
-                    <?php
-                    }
-                    ?>                    
-
-                      
-                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -524,5 +541,110 @@
 
     });
 </script>
+
+<?php if ($paypal_account['Active'] ==1):?>
+<script src="https://www.paypal.com/sdk/js?client-id=<?= $paypal_account['Id'] ?>&currency=<?= $account['Currency'] ?>&enable-funding=venmo,paylater&buyer-country=<?= $account['Pais'] ?>"></script>
+
+<script>
+
+$(document).ready(function() {
+    // Escuchar el cambio en los botones de selección de método de pago
+    $('input[name="payment_method"]').on('change', function() {
+        if ($('#method-paypal').is(':checked')) {
+            // Ocultar campos de Tarjeta y sus botones de envío; mostrar PayPal
+            $('#traditional-gateway-section, #traditional-buttons-section').addClass('d-none');
+            $('#paypal-gateway-section').removeClass('d-none');
+        } else {
+            // Regresar a la pasarela predeterminada (Openpay/Square)
+            $('#paypal-gateway-section').addClass('d-none');
+            $('#traditional-gateway-section, #traditional-buttons-section').removeClass('d-none');
+        }
+    });
+
+    // Inicializar el botón de PayPal
+    paypal.Buttons({
+        commit: true,
+        style: {
+            layout: 'vertical',
+            shape:  'rect',
+            label:  'paypal'
+        },
+        
+        // Validación: Bloquear el flujo de PayPal si los campos de contacto están vacíos
+        onInit: function(data, actions) {
+            function checkForm() {
+                const name = $('#client-name').val();
+                const lastname = $('#client-lastname').val();
+                const email = $('#client-email').val();
+                
+                if(name && lastname && email) {
+                    actions.enable();
+                } else {
+                    actions.disable();
+                }
+            }
+            
+            checkForm();
+            $('#client-name, #client-lastname, #client-email').on('keyup change', checkForm);
+        },
+        
+        onClick: function() {
+            // Si hacen click y falta algo, forzamos al navegador a mostrar las alertas HTML5
+            if(!$('#client-name').val() || !$('#client-lastname').val() || !$('#client-email').val()){
+                $('#payment-form')[0].reportValidity();
+            }
+        },
+
+        createOrder: function(data, actions) {
+            // Obtenemos el monto directamente del input hidden dinámico de tu PHP
+            var monto = $('#monto-final').val(); 
+            
+            return actions.order.create({
+                application_context: {
+                    shipping_preference: 'NO_SHIPPING'
+                },
+                purchase_units: [{
+                    amount: {
+                        value: monto
+                    }
+                }]
+            });
+        },
+
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(orderData) {
+                // Serializamos los datos del formulario (nombre, email, etc) + los datos de PayPal
+                var formData = $('#payment-form').serialize();
+                formData +='&orderID=' + encodeURIComponent(data.orderID);
+                $.ajax({
+                    type: "POST",
+                    url: url_api +'processpayment_paypal',
+                    data:JSON.stringify(Object.fromEntries(new URLSearchParams(formData))),                    
+                    dataType: 'json',
+                    contentType: "application/json", // IMPORTANTE: Indica que envías JSON
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'X-ID-CLIENT': '<?= ID_CLIENT ?>',
+                        'LNG':'<?= $_SESSION['Idioma'] ?>'
+                    },                        
+                    beforeSend: function() {
+                        $('#payment-status-container').html('<div class="spinner-border text-primary"></div> Procesando orden...');
+                    },
+                    success: function(respuestaBackend) {
+                        if(respuestaBackend.status === 'success') {
+                            window.location.replace(respuestaBackend.url);
+                        } else {
+                            $('#payment-status-container').html('<div class="alert alert-danger">'+ respuestaBackend.message +'</div>');
+                        }
+                    }
+                });
+            });
+        }
+    }).render('#paypal-button-container');
+});
+
+</script>
+<?php endif;?>
+
 </body>
 </html>
