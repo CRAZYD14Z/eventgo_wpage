@@ -2,6 +2,8 @@
     ob_start();
     session_start();
     require 'vendor/autoload.php';
+    if (isset($_GET['Template']))
+        $_SESSION['Template'] = $_GET['Template'];
     require_once 'config.php';
     require_once 'functions.php';
     require_once TEMPLATE.'head.php'; 

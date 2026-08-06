@@ -671,6 +671,18 @@ const FHFp = FHF.split(' ')
             echo "$('#tip-adv-pay-pct').hide();";
         }
 
+        if ($account['Tips'] == 0){
+        ?>
+                const $div1 = $('#tip-add');
+                $div1.addClass('d-none')
+                const $div2 = $('#tip-remove');
+                $div2.addClass('d-none')
+                const $div3 = $('#tip-adv-pay-pct');
+                $div3.addClass('d-none')            
+        <?php
+        }     
+        
+
         ?>
 
     }

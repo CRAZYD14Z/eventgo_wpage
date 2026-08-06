@@ -1,9 +1,14 @@
-    <div class="comic-divider" data-label="💥 CATÁLOGO DE PODERES 💥"></div>
+<?php 
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "allcat"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+?> 
+<div class="comic-divider" data-label="💥 CATÁLOGO DE PODERES 💥"></div>
 
     <!-- CATÁLOGO GRID -->
     <section class="mb-5">
         <div class="caption-box">📖 CAPÍTULO 3 — EL UNIVERSO COMPLETO</div>
-        <h2 class="section-title" style="color:var(--green);">Explora el Catálogo</h2>
+        <h2 class="section-title" style="color:var(--green);"><?= Trd(1) ?></h2>
         <p class="section-sub">— ¡Un universo de posibilidades! —</p>
         <div class="row g-2">
                 <?php

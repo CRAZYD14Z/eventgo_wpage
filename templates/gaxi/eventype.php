@@ -1,5 +1,14 @@
-    <section class="mb-5 py-5">
-        <h2 class="section-title"  style="color: var(--dark);">Tipos de Eventos</h2>
+<?php 
+    $SecTitle = "";
+    if ($_SESSION['Idioma'] == 'es')
+        $SecTitle = "SOMOS SU MEJOR OPCION PARA";
+    else
+        $SecTitle = "WE ARE THE PLACE FOR";    
+
+?>
+
+<section class="mb-5 py-5">
+        <h2 class="section-title"  style="color: var(--dark);"><?= $SecTitle ?></h2>
         <div class="swiper swiperEvents">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">

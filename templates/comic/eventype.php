@@ -1,6 +1,15 @@
-    <section class="mb-5 py-4" id="eventos">
+<?php 
+    $SecTitle = "";
+    if ($_SESSION['Idioma'] == 'es')
+        $SecTitle = "SOMOS SU MEJOR OPCION PARA";
+    else
+        $SecTitle = "WE ARE THE PLACE FOR";    
+
+?>
+
+<section class="mb-5 py-4" id="eventos">
         <div class="caption-box">📖 CAPÍTULO 5 — MISIONES DISPONIBLES</div>
-        <h2 class="section-title" style="color:var(--blue);">Tipos de Eventos</h2>
+        <h2 class="section-title" style="color:var(--blue);"><?= $SecTitle ?></h2>
         <p class="section-sub">— ¡Cada misión es épica! —</p>
         <div class="swiper swiperEvents">
             <div class="swiper-wrapper">

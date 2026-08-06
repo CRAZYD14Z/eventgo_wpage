@@ -10,7 +10,7 @@
 ?> 
 
 // Lógica simple para el contador del carrito
-let itemCount = 0;
+// let itemCount = 0;
 const cartCountElement = document.getElementById('cartCount');
 
 document.addEventListener('DOMContentLoaded', function() {

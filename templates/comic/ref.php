@@ -1,9 +1,14 @@
-    <div class="comic-divider" data-label="⚡ LA GENTE HABLA ⚡"></div>
+<?php 
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "ref"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+?> 
+<div class="comic-divider" data-label="⚡ LA GENTE HABLA ⚡"></div>
 
     <!-- REVIEWS -->
     <section class="mb-5">
         <div class="caption-box">📖 CAPÍTULO 2 — TESTIMONIOS HEROICOS</div>
-        <h2 class="section-title" style="color:var(--blue);">¡La Tribuna del Héroe!</h2>
+        <h2 class="section-title" style="color:var(--blue);"><?= Trd(1) ?></h2>
         <p class="section-sub">— Ciudadanos que ya fueron salvados —</p>
         <div class="swiper swiperReviews">
             <div class="swiper-wrapper">

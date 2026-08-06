@@ -1,6 +1,11 @@
+<?php 
+    $api_url = URL_API."Traducciones_web";
+    $data = json_encode(['program' => "categories"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$data,'GET'), true);
+?> 
     <section class="mb-5" id="categorias">
         <div class="caption-box">📖 CAPÍTULO 1 — ESCOGE TU PODER</div>
-        <h2 class="section-title" style="color:var(--red);">Categorías Destacadas</h2>
+        <h2 class="section-title" style="color:var(--red);"><?= Trd(1) ?></h2>
         <p class="section-sub">— ¡Cada héroe tiene su especialidad! —</p>
         <div class="swiper swiperCategories">
             <div class="swiper-wrapper">
