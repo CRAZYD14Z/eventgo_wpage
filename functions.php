@@ -50,7 +50,7 @@
         foreach ($data['account'] as $account) {
 
             define('COMPANY_NAME', $account['NombreCompania']);
-            define('COMPANY_LOGO', $account['Logo']);
+            define('COMPANY_LOGO', URL_IMAGES."/account/originals/".$account['Logo']);
             define('NOSOTROS', $account['Nosotros']);
             define('MISIONVISION', $account['MisionVision']);
             define('COBERTURA', $account['Cobertura']);
