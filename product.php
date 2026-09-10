@@ -5,14 +5,6 @@
     require_once 'config.php';
     require_once 'functions.php';
     require_once TEMPLATE.'head.php'; 
-?>
-    <link rel="stylesheet" href="<?php echo URL_BASE."/";?>css/general.css">
-</head>
-<body>
-
-<?php require_once TEMPLATE.'nav.php'; ?>
-<div class="container py-5">
-    <?php
 
     $api_url = URL_API."products";
     
@@ -22,10 +14,85 @@
         $data = json_encode(["Product" => $Product ,"IdP" => $IdP ,"SD" => date("Y-m-d"),"ED" => date("Y-m-d"),"SH" => '08:00',"EH" => '16:00']);
     else
         $data = json_encode(["Product" => $Product ,"IdP" => $IdP ,"SD" => $_GET['SD'],"ED" => $_GET['ED'],"SH" => $_GET['SH'],"EH" => $_GET['EH']]);
+    
     $data = json_decode(API($jwt,$api_url,$data,'POST'), true);
-    //print_r($data);
     if ($data['status'] === 'success') {
+        $productoMeta = $data['data'][0] ?? [];
+        $metaTitle = trim($productoMeta['Name'] ?? $Product);
+        $metaDescription = trim(preg_replace('/\s+/', ' ', strip_tags($productoMeta['Description'] ?? '')));
+        $metaImage = !empty($data['Image'][0]['Image'])
+            ? URL_IMAGES.'/products_images/thumbnails/'.$data['Image'][0]['Image']
+            : '';
+        $metaUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http')
+            .'://'.($_SERVER['HTTP_HOST'] ?? '').($_SERVER['REQUEST_URI'] ?? '');
         ?>
+        <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+        <meta property="og:title" content="<?= htmlspecialchars($metaTitle, ENT_QUOTES, 'UTF-8') ?>">
+        <meta property="og:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+        <meta property="og:type" content="product">
+        <meta property="og:url" content="<?= htmlspecialchars($metaUrl, ENT_QUOTES, 'UTF-8') ?>">
+        <?php if ($metaImage !== ''): ?>
+            <meta property="og:image" content="<?= htmlspecialchars($metaImage, ENT_QUOTES, 'UTF-8') ?>">
+            <meta name="twitter:image" content="<?= htmlspecialchars($metaImage, ENT_QUOTES, 'UTF-8') ?>">
+        <?php endif; ?>
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="<?= htmlspecialchars($metaTitle, ENT_QUOTES, 'UTF-8') ?>">
+        <meta name="twitter:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+        <?php
+        $schemaImages = [];
+        foreach ($data['Images'] ?? [] as $image) {
+            if (!empty($image['Image'])) {
+                $schemaImages[] = URL_IMAGES.'/products_images/thumbnails/'.$image['Image'];
+            }
+        }
+        if ($metaImage !== '' && !in_array($metaImage, $schemaImages, true)) {
+            array_unshift($schemaImages, $metaImage);
+        }
+
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Product',
+            'name' => $metaTitle,
+            'description' => $metaDescription,
+            'url' => $metaUrl,
+            'image' => $schemaImages
+        ];
+
+        $schemaPrice = $data['Resultadosp'][0]['Price'] ?? null;
+        if ($schemaPrice !== null) {
+            $schema['offers'] = [
+                '@type' => 'Offer',
+                'priceCurrency' => 'USD',
+                'price' => (float) $schemaPrice,
+                'availability' => ((int) ($data['Resultadosp'][0]['Quantity'] ?? 0) > 0)
+                    ? 'https://schema.org/InStock'
+                    : 'https://schema.org/OutOfStock',
+                'url' => $metaUrl
+            ];
+        }
+        ?>
+        <script type="application/ld+json">
+            <?= json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?>
+        </script>
+        <?php
+
+    }
+    else{
+        echo "<h1>Error en la API</h1>";
+        echo "Mensaje: " . ($data['message'] ?? 'Error desconocido');
+    }
+?>
+
+
+    <link rel="stylesheet" href="<?php echo URL_BASE."/";?>css/general.css">
+</head>
+<body>
+
+<?php require_once TEMPLATE.'nav.php'; ?>
+<div class="container py-5">
+    <?php
+    if ($data['status'] === 'success') {
+    ?>
         
     <style>
         /* Estilo para que la columna izquierda sea pegajosa */

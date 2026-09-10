@@ -4,8 +4,79 @@
     require 'vendor/autoload.php';
     require_once 'config.php';
     require_once 'functions.php';
+
+    $Category = str_replace("-"," ",$_GET['Id'] ?? '');
+    $categoryPayload = json_encode([
+        'Category' => $Category,
+        'FI' => date('Y-m-d'),
+        'FF' => date('Y-m-d'),
+        'HI' => '08:00',
+        'HF' => '16:00'
+    ]);
+    $categoryResponse = json_decode(API($jwt, URL_API.'products_categories', $categoryPayload, 'POST'), true);
+    $categoryProducts = $categoryResponse['data'] ?? [];
+
     require_once TEMPLATE.'head.php'; 
+
+    $metaTitle = 'Productos de '.$Category;
+    $metaDescription = 'Consulta los productos disponibles de la categoría '.$Category.'.';
+    $metaUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http')
+        .'://'.($_SERVER['HTTP_HOST'] ?? '').($_SERVER['REQUEST_URI'] ?? '');
+    $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'ItemList',
+        'name' => $metaTitle,
+        'description' => $metaDescription,
+        'url' => $metaUrl,
+        'numberOfItems' => count($categoryProducts),
+        'itemListElement' => []
+    ];
+
+    foreach ($categoryProducts as $position => $product) {
+        $productName = trim($product['ProductName'] ?? '');
+        $productSlug = str_replace(' ', '-', $productName);
+        $productUrl = URL_BASE.'/product/'.rawurlencode($productSlug)
+            .'?Idp='.rawurlencode((string) ($product['Producto'] ?? ''));
+        $productImage = !empty($product['Image'])
+            ? URL_IMAGES.'/products_images/thumbnails/'.$product['Image']
+            : null;
+        $productSchema = [
+            '@type' => 'Product',
+            'name' => $productName,
+            'url' => $productUrl
+        ];
+
+        if ($productImage !== null) {
+            $productSchema['image'] = $productImage;
+        }
+        if (isset($product['Price'])) {
+            $productSchema['offers'] = [
+                '@type' => 'Offer',
+                'priceCurrency' => $account['Currency'] ?? 'USD',
+                'price' => (float) $product['Price'],
+                'url' => $productUrl,
+                'availability' => 'https://schema.org/InStock'
+            ];
+        }
+
+        $schema['itemListElement'][] = [
+            '@type' => 'ListItem',
+            'position' => $position + 1,
+            'item' => $productSchema
+        ];
+    }
 ?>
+    <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:title" content="<?= htmlspecialchars($metaTitle, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?= htmlspecialchars($metaUrl, ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="<?= htmlspecialchars($metaTitle, ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="twitter:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <script type="application/ld+json">
+        <?= json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?>
+    </script>
     <link rel="stylesheet" href="<?php echo URL_BASE."/";?>css/general.css">
 </head>
 <body>
@@ -16,7 +87,6 @@
 
     <hr class="my-5">
     <?php 
-    $Category = str_replace("-"," ",$_GET['Id']);    
     $Title="Categoria";
     $SubTitle="Accesorios";
     $SSubTitle="Accesorios";

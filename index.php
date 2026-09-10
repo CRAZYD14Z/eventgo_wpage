@@ -7,7 +7,45 @@
     require_once 'config.php';
     require_once 'functions.php';
     require_once TEMPLATE.'head.php'; 
+
+    $metaTitle = COMPANY_NAME;
+    $metaDescription = trim(preg_replace('/\s+/', ' ', strip_tags(NOSOTROS ?? '')));
+    if ($metaDescription === '') {
+        $metaDescription = 'Servicios y productos para tus eventos.';
+    }
+    $metaUrl = rtrim(URL_BASE, '/').'/';
+    $socialProfiles = array_values(array_filter([
+        defined('URLFace') ? URLFace : '',
+        defined('URLX') ? URLX : '',
+        defined('URLInsta') ? URLInsta : '',
+        defined('URLYou') ? URLYou : '',
+        defined('URLLink') ? URLLink : ''
+    ]));
+    $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Organization',
+        'name' => $metaTitle,
+        'description' => $metaDescription,
+        'url' => $metaUrl,
+        'logo' => COMPANY_LOGO
+    ];
+    if ($socialProfiles) {
+        $schema['sameAs'] = $socialProfiles;
+    }
 ?>
+    <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:title" content="<?= htmlspecialchars($metaTitle, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?= htmlspecialchars($metaUrl, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:image" content="<?= htmlspecialchars(COMPANY_LOGO, ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= htmlspecialchars($metaTitle, ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="twitter:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="twitter:image" content="<?= htmlspecialchars(COMPANY_LOGO, ENT_QUOTES, 'UTF-8') ?>">
+    <script type="application/ld+json">
+        <?= json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?>
+    </script>
     <link rel="stylesheet" href="<?php echo URL_BASE."/";?>css/general.css">
     <link rel="stylesheet" href="<?php echo URL_BASE."/".TEMPLATE;?>css/coupon.css">
     <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
