@@ -16,6 +16,7 @@
         $data = json_encode(["Product" => $Product ,"IdP" => $IdP ,"SD" => $_GET['SD'],"ED" => $_GET['ED'],"SH" => $_GET['SH'],"EH" => $_GET['EH']]);
     
     $data = json_decode(API($jwt,$api_url,$data,'POST'), true);
+    $datar = $data;
     if ($data['status'] === 'success') {
         $productoMeta = $data['data'][0] ?? [];
         $metaTitle = trim($productoMeta['Name'] ?? $Product);
@@ -91,6 +92,8 @@
 <?php require_once TEMPLATE.'nav.php'; ?>
 <div class="container py-5">
     <?php
+    //print_r($datar);
+    $data = $datar;
     if ($data['status'] === 'success') {
     ?>
         
