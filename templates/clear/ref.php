@@ -59,7 +59,41 @@ if (isset($data['status']) && $data['status'] === 'OK' && !empty($data['result']
         ";
     }
 } else {
-    echo "<p>No se pudieron recuperar las reseñas en este momento.</p>";
+
+
+$api_key = GOOGLE_API_KEY;
+$url = "https://places.googleapis.com/v1/places:searchText";
+
+$payload = json_encode([
+    'textQuery' => "Robinson's Rentals Hesperia"
+]);
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Content-Type: application/json',
+    'X-Goog-Api-Key: ' . $api_key,
+    'X-Goog-FieldMask: places.displayName,places.rating,places.reviews'
+]);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+$data = json_decode($response, true);
+
+if (!empty($data['places'][0]['reviews'])) {
+    foreach ($data['places'][0]['reviews'] as $review) {
+        echo "<p><b>" . htmlspecialchars($review['authorAttribution']['displayName']) . "</b>: " . htmlspecialchars($review['text']['text']) . "</p>";
+    }
+} else {
+    echo "Respuesta cruda de la API: <br>";
+    var_dump($data);
+}
+
+
 }
 ?>
 
