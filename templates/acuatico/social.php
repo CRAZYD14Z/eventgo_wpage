@@ -14,11 +14,11 @@
     </div>
     <h4 class="mb-4 pt-4">🌊 <?= Trd(1) ?> 🌊</h4>
     <div class="d-flex justify-content-center gap-3 flex-wrap mb-3">
-        <a href="<?php echo URLFace?>" class="social-btn"><i class="fab fa-facebook-f"></i></a>
-        <a href="<?php echo URLX?>" class="social-btn"><i class="fab fa-twitter"></i></a>
-        <a href="<?php echo URLInsta?>" class="social-btn"><i class="fab fa-instagram"></i></a>
-        <a href="<?php echo URLWhats?>" class="social-btn"><i class="fab fa-whatsapp"></i></a>
-        <a href="<?php echo URLLink?>" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+       <?php if(URLFace != ''): ?><a href="<?php echo URLFace?>" class="social-btn"><i class="fab fa-facebook-f"></i></a><?php endif; ?>
+        <?php if(URLX != ''): ?><a href="<?php echo URLX?>" class="social-btn"><i class="fab fa-twitter"></i></a><?php endif; ?>
+        <?php if(URLInsta != ''): ?><a href="<?php echo URLInsta?>" class="social-btn"><i class="fab fa-instagram"></i></a><?php endif; ?>
+        <?php if(URLWhats != ''): ?><a href="<?php echo URLWhats?>" class="social-btn"><i class="fab fa-whatsapp"></i></a><?php endif; ?>
+        <?php if(URLLink != ''): ?><a href="<?php echo URLLink?>" class="social-btn"><i class="fab fa-linkedin-in"></i></a><?php endif; ?>
     </div>
     <p>&copy; 2026 🐠 Tu Empresa. Todos los derechos reservados.</p>
 </footer>

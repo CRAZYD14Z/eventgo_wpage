@@ -7,11 +7,11 @@
 <footer>
     <h4 class="mb-4">🎪 <?= Trd(1) ?> 🎪</h4>
     <div class="d-flex justify-content-center gap-3 flex-wrap mb-4">
-        <a href="<?php echo URLFace?>" class="social-btn" title="Facebook"><i class="fab fa-facebook-f fa-lg"></i></a>
-        <a href="<?php echo URLX?>" class="social-btn" title="Twitter"><i class="fab fa-twitter fa-lg"></i></a>
-        <a href="<?php echo URLInsta?>" class="social-btn" title="Instagram"><i class="fab fa-instagram fa-lg"></i></a>
-        <a href="<?php echo URLWhats?>" class="social-btn" title="WhatsApp"><i class="fab fa-whatsapp fa-lg"></i></a>
-        <a href="<?php echo URLLink?>" class="social-btn" title="LinkedIn"><i class="fab fa-linkedin-in fa-lg"></i></a>
+        <?php if(URLFace != ''): ?><a href="<?php echo URLFace?>" class="social-btn" title="Facebook"><i class="fab fa-facebook-f fa-lg"></i></a><?php endif; ?>
+        <?php if(URLX != ''): ?><a href="<?php echo URLX?>" class="social-btn" title="Twitter"><i class="fab fa-twitter fa-lg"></i></a><?php endif; ?>
+        <?php if(URLInsta != ''): ?><a href="<?php echo URLInsta?>" class="social-btn" title="Instagram"><i class="fab fa-instagram fa-lg"></i></a><?php endif; ?>
+        <?php if(URLWhats != ''): ?><a href="<?php echo URLWhats?>" class="social-btn" title="WhatsApp"><i class="fab fa-whatsapp fa-lg"></i></a><?php endif; ?>
+        <?php if(URLLink != ''): ?><a href="<?php echo URLLink?>" class="social-btn" title="LinkedIn"><i class="fab fa-linkedin-in fa-lg"></i></a><?php endif; ?>
     </div>
     <p class="mt-2 text-muted small">&copy; 2026 🎠 Tu Empresa. Todos los derechos reservados. 🎠</p>
 </footer>

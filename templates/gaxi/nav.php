@@ -41,21 +41,7 @@
                     </ul>
                 </li>
                 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropNosotros" data-bs-toggle="dropdown">
-                        Templates
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="<?php echo URL_BASE?>/index.php?Template=clear">Clear</a></li>
-                        <li><a class="dropdown-item" href="<?php echo URL_BASE?>/index.php?Template=acuatico">Acuatic</a></li>
-                        <li><a class="dropdown-item" href="<?php echo URL_BASE?>/index.php?Template=circo">Circus</a></li>
-                        <li><a class="dropdown-item" href="<?php echo URL_BASE?>/index.php?Template=comic">Comic</a></li>
-                        <li><a class="dropdown-item" href="<?php echo URL_BASE?>/index.php?Template=cumpleanos">Birthday</a></li>
-                        <li><a class="dropdown-item" href="<?php echo URL_BASE?>/index.php?Template=gaxi">Gaxi</a></li>
-                        <li><a class="dropdown-item" href="https://www.eventgodemo.solutions/">DsJumpers</a></li>
-                        <li><a class="dropdown-item" href="<?php echo URL_BASE?>/index.php?Template=lego">Lego</a></li>
-                    </ul>
-                </li>                   
+               
 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropNosotros" data-bs-toggle="dropdown">

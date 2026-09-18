@@ -87,9 +87,15 @@
 
     <hr class="my-5">
     <?php 
-    $Title="Categoria";
-    $SubTitle="Accesorios";
-    $SSubTitle="Accesorios";
+
+    $api_url = URL_API."Traducciones_web";
+    $datat = json_encode(['program' => "productos"]);
+    $Traducciones = json_decode(API($jwt,$api_url,$datat,'GET'), true);
+
+    $Title=Trd(1);
+    $SubTitle=Trd(2);
+    $SSubTitle=Trd(2);
+    $Trd_tmp = $Traducciones;
     require_once TEMPLATE.'products.php'; 
     ?>
 </div>
@@ -99,7 +105,10 @@
 <?php require_once TEMPLATE.'cart.php'; ?>
 
 <?php require_once TEMPLATE.'scripts.php'; ?>
-<?php require_once 'scripts.php'; ?>
+<?php 
+    require_once 'scripts.php'; 
+    $Traducciones = $Trd_tmp;
+?>
 
 <script src="<?php echo URL_BASE."/".TEMPLATE;?>js/idx-template.js"></script>
 <script src="<?php echo URL_BASE."/";?>js/general.php"></script>
@@ -119,18 +128,18 @@
                 'LNG':'<?= $_SESSION['Idioma'] ?>'
             },        
             beforeSend: function() {
-                contenedor.innerHTML = '<div class="text-center">Cargando productos...</div>';
+                contenedor.innerHTML = '<div class="text-center"><?= Trd(3) ?></div>';
             },
             success: function(response) {
                 if (response.status === 'success') {
                     
                     mostrarProductos(response.data);
                 } else {
-                    contenedor.innerHTML = '<div class="text-center">No se encontraron productos</div>';
+                    contenedor.innerHTML = '<div class="text-center"><?= Trd(4) ?></div>';
                 }
             },
             error: function() {
-                contenedor.innerHTML = '<div class="text-center text-danger">Error al cargar productos</div>';
+                contenedor.innerHTML = '<div class="text-center text-danger"><?= Trd(5) ?></div>';
             }
         });    
 
@@ -141,7 +150,7 @@
         contenedor.innerHTML = '';
         
         if(productos.length === 0) {
-            contenedor.innerHTML = '<div class="text-center">No hay productos disponibles</div>';
+            contenedor.innerHTML = '<div class="text-center"><?= Trd(6) ?></div>';
             return;
         }
         
@@ -152,8 +161,8 @@
             const productoHTML = `
                 <div class="col-6 col-md-4 col-lg-2">
                     <a href="${url}" class="cat-card">
-                        <img width="100px" src="${imagenUrl}" alt="${product.ProductName}">
-                        <b>${product.ProductName}</b> <br> $${product.Price.toFixed(2)}
+                        <img width="125px" src="${imagenUrl}" alt="${product.ProductName}">
+                        <br><b>${product.ProductName}</b> <br> $${product.Price.toFixed(2)}
                     </a>
                 </div>
             `;

@@ -15,9 +15,12 @@
                 $data = json_decode(API($jwt,$api_url,$data,'POST'), true);
                 if ($data['status'] === 'success') {
                     foreach ($data['data'] as $category) {
-                        $category['Imagen'] = URL_IMAGES.'/categories/thumbnails/'.$category['Imagen'];
+                        $imagen = trim(isset($category['Imagen']) ? (string)$category['Imagen'] : '');
+                        $category['Imagen'] = $imagen !== ''
+                            ? URL_IMAGES.'/categories/thumbnails/'.$imagen
+                            : 'src/img/noimage.svg';
                         $URL = str_replace(" ","-",$category['Nombre']);
-                        echo "<div class='swiper-slide'><a href='products/{$URL}' class='cat-card'><img height='150px' src='{$category['Imagen']}' alt='{$category['Nombre']}'> </a></div>";
+                        echo "<div class='swiper-slide'><a href='products/{$URL}' class='cat-card'><img height='150px' src='{$category['Imagen']}' alt='{$category['Nombre']}'> </a>{$category['Nombre']}</div>";
                     }        
                 } 
             ?>
