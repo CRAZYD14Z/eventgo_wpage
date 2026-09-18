@@ -278,20 +278,20 @@
                 <div class="product-details">                
                     <?php echo $producto['Description']?>
 
-                    <?if ($producto['ActualSize'] != ''):?>
+                    <?php if ($producto['ActualSize'] != ''):?>
                     <h5 class="mt-4 fw-bold"><?= Trd(4) ?></h5>
                     <p><?php echo $producto['ActualSize']?></p>
-                    <?endif;?>
+                    <?php endif;?>
                     
                     <?php if ($producto['SpaceRequired'] != ''):?>
                     <h5 class="mt-4 fw-bold"><?= Trd(5) ?></h5>
                     <p><?php echo $producto['SpaceRequired']?></p>
-                    <?endif;?>
+                    <?php endif;?>
 
                     <?php if ($producto['Weight'] != ''):?>
                     <h5 class="mt-4 fw-bold"><?= Trd(6) ?></h5>
                     <p><?php echo $producto['Weight']?></p>
-                    <?endif;?>
+                    <?php endif;?>
                 </div>    
         </div>
 
