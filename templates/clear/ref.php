@@ -62,37 +62,38 @@ if (isset($data['status']) && $data['status'] === 'OK' && !empty($data['result']
 
 
 $api_key = GOOGLE_API_KEY;
-$url = "https://places.googleapis.com/v1/places:searchText";
 
-$payload = json_encode([
-    'textQuery' => "Robinsons Rentals Hesperia"
-]);
+// Consulta de texto buscando el negocio exacto
+$query = urlencode("Robinson's Rentals Hesperia CA");
+$url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query={$query}&key={$api_key}&language=es";
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Content-Type: application/json',
-    'X-Goog-Api-Key: ' . $api_key,
-    'X-Goog-FieldMask: places.displayName,places.rating,places.reviews'
-]);
-
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 $response = curl_exec($ch);
 curl_close($ch);
 
 $data = json_decode($response, true);
 
-if (!empty($data['places'][0]['reviews'])) {
-    foreach ($data['places'][0]['reviews'] as $review) {
-        echo "<p><b>" . htmlspecialchars($review['authorAttribution']['displayName']) . "</b>: " . htmlspecialchars($review['text']['text']) . "</p>";
-    }
-} else {
-    echo "Respuesta cruda de la API: <br>";
-    var_dump($data);
-}
+if (isset($data['status']) && $data['status'] === 'OK' && !empty($data['results'][0]['place_id'])) {
+    // Obtenemos el Place ID dinámico real que Google asignó en el momento
+    $real_place_id = $data['results'][0]['place_id'];
 
+    // Ahora pedimos los detalles con ese ID recién obtenido
+    $details_url = "https://maps.googleapis.com/maps/api/place/details/json?place_id={$real_place_id}&fields=name,rating,reviews&key={$api_key}&language=es";
+
+    $ch2 = curl_init();
+    curl_setopt($ch2, CURLOPT_URL, $details_url);
+    curl_setopt($ch2, CURLOPT_RETURNTRANSFER, 1);
+    $details_response = curl_exec($ch2);
+    curl_close($ch2);
+
+    $details_data = json_decode($details_response, true);
+    
+    print_r($details_data);
+} else {
+    echo "No se encontró el lugar por nombre.";
+}
 
 }
 ?>
