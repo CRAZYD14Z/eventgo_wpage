@@ -65,7 +65,7 @@ $api_key = GOOGLE_API_KEY;
 $url = "https://places.googleapis.com/v1/places:searchText";
 
 $payload = json_encode([
-    'textQuery' => "Robinson's Rentals Hesperia"
+    'textQuery' => "Robinsons Rentals Hesperia"
 ]);
 
 $ch = curl_init();
