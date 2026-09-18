@@ -64,8 +64,8 @@ if (isset($data['status']) && $data['status'] === 'OK' && !empty($data['result']
 $api_key = GOOGLE_API_KEY;
 
 // Consulta de texto buscando el negocio exacto
-$query = urlencode("Robinson's Rentals Hesperia CA");
-$url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query={$query}&key={$api_key}&language=es";
+$query = urlencode("Robinsons Rentals");
+$url = "https://maps.googlepis.com/maps/api/place/textsearch/json?query={$query}&key={$api_key}&language=es";
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
