@@ -19,7 +19,8 @@
                                 : 'src/img/noimage.svg';
                             
                             $URL = str_replace(" ","-",$category['Nombre']);
-                            echo "<div class='col-6 col-md-4 col-lg-2'><a href='".URL_BASE."/products/{$URL}' class='cat-card'><img height='125px' src='{$category['Imagen']}' alt='{$category['Nombre']}'> </a>{$category['Nombre']}</div>";
+                            //echo "<div class='col-6 col-md-4 col-lg-2'><a href='".URL_BASE."/products/{$URL}' class='cat-card'><img height='125px' src='{$category['Imagen']}' alt='{$category['Nombre']}'> </a>{$category['Nombre']}</div>";
+                            echo "<div class='swiper-slide'><a href='".URL_BASE."/products/{$URL}' class='cat-card' style='overflow:hidden;'><img src='{$category['Imagen']}' alt='{$category['Nombre']}' style='display:block;width:100%;max-width:100%;height:150px;object-fit:contain;'> </a>{$category['Nombre']}</div>";
                         }        
                     } 
                 ?>
