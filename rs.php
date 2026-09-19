@@ -28,8 +28,8 @@ const API_KEY = 'AIzaSyCRw-m6FwodZdcIPw1rtAKWqvyziRm1ihM';
 const PLACE_ID_MANUAL = 'ChIJGeGXzDkCr04RHkr3qBFHe3c';
 
 // Acepta la URL larga o el enlace corto (maps.app.goo.gl/...)
-const MAPS_URL = 'https://www.google.com/maps/place/Robinsons+Rentals/@34.4573987,-117.7144102,84670m/data=!3m1!1e3!4m10!1m2!2m1!1sRobinsons+Rentals!3m6!1s0x4eaf0239cc97e119:0x777b4711a8f74a1e!8m2!3d34.4820709!4d-117.3703549!15sChFSb2JpbnNvbnMgUmVudGFscyIDiAEBWhMiEXJvYmluc29ucyByZW50YWxzkgEecGFydHlfZXF1aXBtZW50X3JlbnRhbF9zZXJ2aWNlmgFEQ2k5RFFVbFJRVU52WkVOb2RIbGpSamx2VDI1R01HUkhXa05oTVZVMFdUSTBkRTF0VG1GYWVUQTFWVVpLY2xReVl4QULgAQD6AQQIABBD!16s%2Fg%2F11ny0gdl0d?entry=ttu&g_ep=EgoyMDI2MDkxNi4wIKXMDSoASAFQAw%3D%3D';
-
+//const MAPS_URL = 'https://www.google.com/maps/place/Robinsons+Rentals/@34.4573987,-117.7144102,84670m/data=!3m1!1e3!4m10!1m2!2m1!1sRobinsons+Rentals!3m6!1s0x4eaf0239cc97e119:0x777b4711a8f74a1e!8m2!3d34.4820709!4d-117.3703549!15sChFSb2JpbnNvbnMgUmVudGFscyIDiAEBWhMiEXJvYmluc29ucyByZW50YWxzkgEecGFydHlfZXF1aXBtZW50X3JlbnRhbF9zZXJ2aWNlmgFEQ2k5RFFVbFJRVU52WkVOb2RIbGpSamx2VDI1R01HUkhXa05oTVZVMFdUSTBkRTF0VG1GYWVUQTFWVVpLY2xReVl4QULgAQD6AQQIABBD!16s%2Fg%2F11ny0gdl0d?entry=ttu&g_ep=EgoyMDI2MDkxNi4wIKXMDSoASAFQAw%3D%3D';
+const MAPS_URL = '';
 /* ------------------------------------------------------------------ */
 /* 0. Resolver enlaces cortos (maps.app.goo.gl)                        */
 /* ------------------------------------------------------------------ */
